@@ -28,7 +28,6 @@ int main() {
   m=normal(); m.set(SOLAR,"-1","W"); assert(!m.get(SOLAR).valid);
   m=normal(); m.set(VOLTAGE,"52400","mV"); assert(std::fabs(m.get(VOLTAGE).value-52.4)<.001);
   m.set(CURRENT,"-8600","mA"); assert(std::fabs(m.get(CURRENT).value+8.6)<.001);
-  m=normal(); m.signs(true,true); assert(m.get(BATTERY).value==450 && m.get(GRID).value==-150);
   m=normal(); m.set(GRID,"-2.5","kW"); assert(m.get(GRID).value==-2500);
   m=normal(); m.set(SOLAR,"1.2","MW"); assert(m.get(SOLAR).value==1200000);
   // Critical loads are independently mapped and optional, never inferred from AC consumption.
@@ -64,13 +63,13 @@ int main() {
   m=normal(); m.disconnected=true; assert(m.health(now)==Health::OLD);
   m=normal(); m.set(GRID,"unavailable","W"); assert(m.health(now)==Health::OK); // off-grid is optional
   m=normal(); m.set(VOLTAGE,"unavailable","V"); assert(m.health(now)==Health::OK);
-  m=normal(); m.max_age=60; assert(m.health(now)==Health::OK);
-  assert(m.health(now+1)==Health::OLD);
+  m=normal(); assert(m.health(now+900)==Health::OK);
+  assert(m.health(now+901)==Health::OLD);
   m=normal(); m.at=0; m.set_time("1792303200000"); assert(m.at==0);
   m.set_time("2026-10-18T12:00:00Z"); assert(m.at==0);
   m.set_time("nan"); assert(m.at==0);
   m.set_time("-1"); assert(m.at==0);
   m.set_time("1792303200.5"); assert(m.at==0);
   m=Model{}; assert(m.health(now)==Health::EMPTY);
-  std::cout << "Model tests passed: units, missing values, signs, optional sensors and source age.\n";
+  std::cout << "Model tests passed: units, missing values, optional sensors and source age.\n";
 }

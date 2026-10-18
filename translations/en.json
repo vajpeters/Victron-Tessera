@@ -7,13 +7,7 @@
     "summary": "Your Victron sensors together on your Tessera screen.",
     "tile_name": "Victron dashboard",
     "card_name": "Victron details",
-    "tile_example": "Choose a Victron dashboard sensor",
-    "reverse_battery": "Battery discharge is positive",
-    "reverse_battery_hint": "Turn on if your mapped battery power sensor reports positive power when discharging.",
-    "reverse_grid": "Grid export is positive",
-    "reverse_grid_hint": "Turn on if your mapped grid power sensor reports positive power when exporting.",
-    "max_age": "Maximum measurement age",
-    "max_age_hint": "Only used with the selected dashboard sensor's optional source_time attribute. No timestamp means age unknown."
+    "tile_example": "Choose a Victron dashboard sensor"
   },
   "screen": {
     "soc": "Battery",
@@ -33,9 +27,6 @@
     "clock": "Set clock",
     "measured": "Measured",
     "empty": "Choose a dashboard sensor",
-    "reverse_battery": "Discharge positive",
-    "reverse_grid": "Export positive",
-    "max_age": "Old after",
     "import": "Import",
     "export": "Export",
     "inverter": "Inverter",

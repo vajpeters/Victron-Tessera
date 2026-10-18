@@ -1,5 +1,5 @@
 id: victron_vrm
-version: 0.3.1
+version: 0.3.2
 api: '0.9'
 icon: solar-power
 maintainer: vajpeters
@@ -49,13 +49,3 @@ tiles:
 cards:
 - id: dashboard
   name: card_name
-settings:
-- key: vrm_battery_discharge_positive
-  label: reverse_battery
-  hint: reverse_battery_hint
-- key: vrm_grid_export_positive
-  label: reverse_grid
-  hint: reverse_grid_hint
-- key: vrm_measurement_maximum_age
-  label: max_age
-  hint: max_age_hint

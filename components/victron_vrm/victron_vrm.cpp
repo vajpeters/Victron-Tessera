@@ -40,9 +40,6 @@ Model VictronVrm::model(JsonObjectConst data) const {
   const JsonVariantConst source_time = attributes["source_time"];
   if (source_time.is<const char *>()) m.set_time(source_time.as<const char *>());
   else if (!source_time.isNull()) m.set_time(source_time.as<double>());
-  m.signs(battery_reverse_ && battery_reverse_->state, grid_reverse_ && grid_reverse_->state);
-  if (max_age_ && max_age_->has_state() && std::isfinite(max_age_->state))
-    m.max_age = static_cast<uint32_t>(max_age_->state);
   m.disconnected = data["wait"].is<const char *>();
   return m;
 }
@@ -164,14 +161,5 @@ class DashboardCard : public tessera::Card {
 void VictronVrm::setup() {
   add_tile("overview", [this]() { return new OverviewTile(this); });
   add_card("dashboard", [this]() { return new DashboardCard(this); }, true);
-}
-bool VictronVrm::settings(tessera::SettingsPage &page) {
-  page.toggle(text("reverse_battery"), [this] { return battery_reverse_ && battery_reverse_->state; },
-    [this](bool on) { if (battery_reverse_) { if (on) battery_reverse_->turn_on(); else battery_reverse_->turn_off(); } });
-  page.toggle(text("reverse_grid"), [this] { return grid_reverse_ && grid_reverse_->state; },
-    [this](bool on) { if (grid_reverse_) { if (on) grid_reverse_->turn_on(); else grid_reverse_->turn_off(); } });
-  page.number(text("max_age"), 60, 86400, 60, "s", [this] { return max_age_ ? static_cast<int>(max_age_->state) : 900; },
-    [this](int age) { if (max_age_) { auto call = max_age_->make_call(); call.set_value(age); call.perform(); } });
-  return true;
 }
 }  // namespace esphome::victron_vrm

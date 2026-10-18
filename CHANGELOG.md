@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+- Removes the battery-sign, grid-sign and maximum-measurement-age settings.
+- Uses one fixed data contract: battery power is positive while charging, grid power is positive while importing, and timestamped measurements become old after 15 minutes.
+
 ## 0.3.1
 - Prevents repeated dashboard redraws from exhausting runtime memory or tripping the display watchdog.
 - Corrects the tile's layout-memory estimate; the large Victron view itself lives in PSRAM on supported screens.

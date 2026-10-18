@@ -7,13 +7,7 @@
     "summary": "Je Victron-sensoren overzichtelijk op je Tessera-scherm.",
     "tile_name": "Victron-dashboard",
     "card_name": "Victron-details",
-    "tile_example": "Kies een Victron-dashboardsensor",
-    "reverse_battery": "Accu ontladen is positief",
-    "reverse_battery_hint": "Aan als de gekozen accusensor positief vermogen meldt tijdens ontladen.",
-    "reverse_grid": "Net terugleveren is positief",
-    "reverse_grid_hint": "Aan als de gekozen netsensor positief vermogen meldt bij teruglevering.",
-    "max_age": "Maximale meetleeftijd",
-    "max_age_hint": "Alleen met het optionele attribuut source_time van de gekozen dashboardsensor. Zonder tijdstempel is de leeftijd onbekend."
+    "tile_example": "Kies een Victron-dashboardsensor"
   },
   "screen": {
     "soc": "Accu",
@@ -33,9 +27,6 @@
     "clock": "Klok instellen",
     "measured": "Gemeten",
     "empty": "Kies dashboardsensor",
-    "reverse_battery": "Ontladen positief",
-    "reverse_grid": "Terugleveren positief",
-    "max_age": "Verouderd na",
     "import": "Afname",
     "export": "Teruglevering",
     "inverter": "Omvormer",

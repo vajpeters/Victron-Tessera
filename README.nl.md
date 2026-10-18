@@ -24,6 +24,8 @@ De verplichte attributen zijn `battery_power`, `solar_power`, `load_power` en `g
 
 Vermogen mag W, kW of MW zijn; kWh en VA worden niet als W gelezen. De plug-in telt geen fasen of zonnebronnen op en verzint geen ontbrekende waarden. Voor een driefasesysteem geef je zelf correcte totaalsensoren door.
 
+Het vaste tekencontract is: accuvermogen is positief bij laden en negatief bij ontladen; netvermogen is positief bij afname en negatief bij teruglevering. Met `source_time` worden waarden na 15 minuten als oud gemarkeerd.
+
 ## Victron-indeling
 
 Ruime tegels en de detailkaart tonen Net, AC-verbruik en Kritieke verbruikers bovenaan, een omvormersymbool in het midden, en Accu en Zon/PV onderaan. De plug-in werkt op het 5x5-paginaraster; 5x4 liggend en 4x5 staand passen binnen dat raster. Kleine tegels gebruiken de compacte weergave. De gekozen Tessera-kleur vult de achtergrond en kleurt de lichte panelen subtiel mee.

@@ -24,13 +24,10 @@ class Contract(unittest.TestCase):
         self.assertEqual('5x5',self.manifest['tiles'][0]['sizes']['max'])
         preview=yaml.safe_load((ROOT/'preview.yaml').read_text())
         self.assertIn('5x4',preview['tiles'][0]['sizes'])
-    def test_sign_settings_are_persisted_and_exposed(self):
-        self.assertEqual(2,len(self.package['switch']))
-        for switch in self.package['switch']:
-            self.assertEqual('RESTORE_DEFAULT_OFF',switch['restore_mode'])
-            self.assertTrue(switch['optimistic'])
-        self.assertEqual(3,len(self.manifest['settings']))
-        self.assertTrue(self.package['number'][0]['restore_value'])
+    def test_plugin_has_no_screen_settings(self):
+        self.assertNotIn('switch',self.package)
+        self.assertNotIn('number',self.package)
+        self.assertNotIn('settings',self.manifest)
     def test_translations_are_complete_in_both_languages(self):
         en=json.loads((ROOT/'translations/en.json').read_text(encoding='utf-8'))
         nl=json.loads((ROOT/'translations/nl.json').read_text(encoding='utf-8'))

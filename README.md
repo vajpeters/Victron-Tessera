@@ -20,7 +20,6 @@ This is the actual compiled detail card with synthetic Home Assistant measuremen
 5. Add **Victron dashboard** to the layout. In the tile inspector select your dashboard sensor.
 6. Select any standard Tessera background colour in the same inspector. The colour fills the backdrop and softly tints the Victron panels.
 7. For the 10.1-inch landscape screen, use 5x4. Tessera names an exact 5x5 page-sized tile `full`, which its plugin editor does not offer yet; tap the 5x4 tile for the full detail card.
-8. If needed, change **Battery discharge is positive** and **Grid export is positive** in the plugin settings.
 
 Every tile can select a different dashboard sensor. Changing the selected entity or background colour is a layout change and does not require a firmware rebuild.
 
@@ -60,10 +59,10 @@ template:
 | Value | Place | Accepted unit | Meaning |
 |---|---|---|---|
 | Battery percentage | Sensor state | `%` | Number from 0 to 100 |
-| Battery power | `battery_power` | `W`, `kW`, `MW` | Positive charging, negative discharging by default |
+| Battery power | `battery_power` | `W`, `kW`, `MW` | Positive charging, negative discharging |
 | Solar power | `solar_power` | `W`, `kW`, `MW` | Nonnegative total solar power |
 | AC consumption | `load_power` | `W`, `kW`, `MW` | Nonnegative AC load power, not cumulative energy |
-| Grid power | `grid_power` | `W`, `kW`, `MW` | Positive import, negative export by default |
+| Grid power | `grid_power` | `W`, `kW`, `MW` | Positive import, negative export |
 | Critical Loads | `critical_load_power` | `W`, `kW`, `MW` | Optional protected-load power; never inferred from AC Loads |
 | Battery voltage | `battery_voltage` | `V`, `mV` | Optional, nonnegative |
 | Battery current | `battery_current` | `A`, `mA` | Optional, signed as provided |

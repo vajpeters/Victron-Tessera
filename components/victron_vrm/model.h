@@ -21,8 +21,9 @@ inline bool numeric(const char *raw, double &out) {
 enum class Health { EMPTY, PARTIAL, OLD, UNKNOWN_TIME, CLOCK, OK };
 class Model {
  public:
+  static constexpr uint32_t MAX_AGE = 900;
   std::array<Sample, COUNT> samples{};
-  uint32_t at = 0, max_age = 900;
+  uint32_t at = 0;
   bool disconnected = false;
   void set(Metric metric, const char *raw, const char *unit) {
     if (metric >= COUNT) return;
@@ -63,16 +64,12 @@ class Model {
       at = static_cast<uint32_t>(epoch);
   }
   Sample get(Metric metric) const { return samples[metric]; }
-  void signs(bool discharge_positive, bool export_positive) {
-    if (discharge_positive) samples[BATTERY].value *= -1;
-    if (export_positive) samples[GRID].value *= -1;
-  }
   Health health(uint32_t now) const {
     bool any = false;
     for (const auto &s : samples) any = any || s.valid;
     if (!any) return Health::EMPTY;
     if (disconnected) return Health::OLD;
-    if (at && now && ((at > now && at - now > 300u) || (now > at && now - at > max_age))) return Health::OLD;
+    if (at && now && ((at > now && at - now > 300u) || (now > at && now - at > MAX_AGE))) return Health::OLD;
     if (!get(SOC).valid || !get(BATTERY).valid || !get(SOLAR).valid || !get(LOAD).valid) return Health::PARTIAL;
     if (!at) return Health::UNKNOWN_TIME;
     if (!now) return Health::CLOCK;
