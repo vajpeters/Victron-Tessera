@@ -107,8 +107,10 @@ class FlowView {
     }
     const theme::Role accents[5] = {theme::INK, theme::MARK_GREEN, theme::MARK_AMBER, theme::MARK_BLUE, theme::MARK_AMBER};
     for (int i = 0; i < 5; ++i) ui::set_color(cards_[i].icon, accents[i]);
-    ui::set_tone(cards_[2].icon, tessera::Tone::BUSY, theme::INK);
-    ui::set_tone(cards_[4].icon, tessera::Tone::BUSY, theme::INK);
+    // Use the core's icon treatment: amber text itself is too pale on a white card.
+    const auto solar_ink = lv_color_hex(theme::icon(theme::hex(theme::ENERGY_SOLAR)));
+    lv_obj_set_style_text_color(cards_[2].icon, solar_ink, 0);
+    lv_obj_set_style_text_color(cards_[4].icon, solar_ink, 0);
     for (int i = 0; i < line_count_; ++i) ui::set_fill(lines_[i], tessera::Tone::NORMAL, theme::LINE);
     ui::set_fill(inverter_, tessera::Tone::NORMAL, theme::ACCENT);
     ui::set_fill(inverter_band_, tessera::Tone::NORMAL, theme::MARK_AMBER);
