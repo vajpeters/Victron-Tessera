@@ -56,27 +56,27 @@ class FlowView {
     for (int i = 0; i < 5; ++i) {
       auto &c = cards_[i]; c.width = cw - gap * 2; c.height = ch;
       c.frame = box(parent, xs[i], ys[i], cw, ch, theme::LINE, ui::px(6));
-      c.surface = box(parent, xs[i] + 1, ys[i] + 1, cw - 2, ch - 2, theme::CARD, ui::px(6));
-      const int tx = xs[i] + gap, ty = ys[i] + gap;
+      c.surface = box(c.frame, 1, 1, cw - 2, ch - 2, theme::CARD, ui::px(6));
+      const int tx = gap - 1, ty = gap - 1;
       c.value_height = ch - body * 2 - gap * 3 - header;
-      c.icon = label(parent, tx, ty, icon, Font::ICON_SMALL, accents[i]);
+      c.icon = label(c.surface, tx, ty, icon, Font::ICON_SMALL, accents[i]);
       ui::set_text(c.icon, ui::icon(glyphs[i]));
-      c.title = label(parent, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::TITLE, theme::INK);
+      c.title = label(c.surface, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::TITLE, theme::INK);
       c.value_width = c.width - icon - gap / 2;
       c.value_x = tx + icon + gap / 2; c.value_y = ty + header + gap / 2;
-      c.value = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
-      c.unit = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
-      c.rule = box(parent, xs[i] + 1, ys[i] + ch - body * 2 - gap, cw - 2, 1, theme::LINE, 0);
-      c.note = label(parent, tx, ys[i] + ch - body * 2 - gap / 2, c.width, Font::BODY, theme::MUTED);
-      c.extra = label(parent, tx, ys[i] + ch - body - gap / 2, c.width, Font::BODY, theme::MUTED);
+      c.value = label(c.surface, tx, c.value_y, c.width, Font::TITLE, theme::INK);
+      c.unit = label(c.surface, tx, c.value_y, c.width, Font::TITLE, theme::INK);
+      c.rule = box(c.surface, 0, ch - body * 2 - gap - 1, cw - 2, 1, theme::LINE, 0);
+      c.note = label(c.surface, tx, ch - body * 2 - gap / 2 - 1, c.width, Font::BODY, theme::MUTED);
+      c.extra = label(c.surface, tx, ch - body - gap / 2 - 1, c.width, Font::BODY, theme::MUTED);
     }
     inverter_ = box(parent, center - iw / 2, mid - ih / 2, iw, ih, theme::ACCENT, ui::px(6));
-    inverter_band_ = box(parent, center - iw / 2, mid, iw, ui::px(3), theme::MARK_AMBER, 0);
-    inverter_icon_ = label(parent, center - iw / 2, mid - ih / 2 + ui::px(4), iw,
+    inverter_band_ = box(inverter_, 0, ih / 2, iw, ui::px(3), theme::MARK_AMBER, 0);
+    inverter_icon_ = label(inverter_, 0, ui::px(4), iw,
                            Font::ICON, theme::ON_ACCENT);
     lv_obj_set_style_text_align(inverter_icon_, LV_TEXT_ALIGN_CENTER, 0);
     ui::set_text(inverter_icon_, ui::icon(0xF095B));
-    inverter_text_ = label(parent, center - iw / 2 + ui::px(2), mid + ih / 2 - body - ui::px(4),
+    inverter_text_ = label(inverter_, ui::px(2), ih - body - ui::px(4),
                            iw - ui::px(4), Font::BODY, theme::ON_ACCENT);
     lv_obj_set_style_text_align(inverter_text_, LV_TEXT_ALIGN_CENTER, 0);
     ui::set_text(inverter_text_, plugin_->text("inverter"));
@@ -107,11 +107,13 @@ class FlowView {
     }
     const theme::Role accents[5] = {theme::INK, theme::MARK_GREEN, theme::MARK_AMBER, theme::MARK_BLUE, theme::MARK_AMBER};
     for (int i = 0; i < 5; ++i) ui::set_color(cards_[i].icon, accents[i]);
+    ui::set_tone(cards_[2].icon, tessera::Tone::BUSY, theme::INK);
+    ui::set_tone(cards_[4].icon, tessera::Tone::BUSY, theme::INK);
     for (int i = 0; i < line_count_; ++i) ui::set_fill(lines_[i], tessera::Tone::NORMAL, theme::LINE);
     ui::set_fill(inverter_, tessera::Tone::NORMAL, theme::ACCENT);
     ui::set_fill(inverter_band_, tessera::Tone::NORMAL, theme::MARK_AMBER);
     ui::set_color(inverter_icon_, theme::ON_ACCENT); ui::set_color(inverter_text_, theme::ON_ACCENT);
-    for (auto *arrow : arrows_) ui::set_color(arrow, theme::ACCENT);
+    for (auto *arrow : arrows_) ui::set_color(arrow, theme::ACCENT_ICON);
     ui::set_color(footer_, theme::MUTED);
   }
   void paint(const Model &m, uint32_t now) {
