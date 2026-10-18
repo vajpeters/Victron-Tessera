@@ -31,3 +31,7 @@ Ruime tegels en de detailkaart tonen Net, AC-verbruik en Kritieke verbruikers bo
 Pijlen verschijnen alleen bij geldige, verse metingen boven 1 W. Het omvormersymbool meldt geen gemeten bedrijfsstatus. Historische grafieken, MPPT-details en andere ontbrekende gegevens uit het Victron-voorbeeld worden niet nagebootst.
 
 Je hebt geen VRM-token nodig. De bestaande Home Assistant-integratie verzorgt de koppeling met Victron.
+
+## Compatibiliteit
+
+Gebruik Tessera 0.4.88 (schermfirmware 0.56.0) of nieuwer. Vanaf die versie bewaart Tessera de gegevens van plug-integels in PSRAM; oudere firmware kan bij druk intern geheugen opnieuw opstarten of wifi verliezen. De testversie van deze plug-in is Tessera 0.4.89 met ESPHome 2026.9.0.

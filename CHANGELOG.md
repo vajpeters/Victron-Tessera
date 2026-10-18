@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+- Prevents repeated dashboard redraws from exhausting runtime memory or tripping the display watchdog.
+- Corrects the tile's layout-memory estimate; the large Victron view itself lives in PSRAM on supported screens.
+
 ## 0.3.0
 - Choose the Home Assistant dashboard sensor while adding or editing each tile; changing it no longer rebuilds firmware.
 - Supports Tessera's 5x5 page grid, including 5x4 landscape and 4x5 portrait spans.

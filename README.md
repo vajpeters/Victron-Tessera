@@ -79,7 +79,7 @@ The plugin never infers consumption from an energy balance, adds phases or contr
 
 ## Compatibility and development
 
-The manifest requires plugin API 0.9, ESPHome 2026.6.2 or later, and a Tessera version that supports those. The verification target is Tessera 0.4.89 / ESPHome 2026.9.0. Supported boards are not hardware-certified until tested. The 12288-byte tile budget and 24 KB flash estimate are conservative reservations.
+Use Tessera 0.4.88 (screen firmware 0.56.0) or newer. That release moved plugin tile data to PSRAM and prevents restarts when internal memory is busy. The manifest requires plugin API 0.9 and ESPHome 2026.6.2 or later; the verification target is Tessera 0.4.89 / ESPHome 2026.9.0. Supported boards are not hardware-certified until tested. The tile reserves 768 bytes in Tessera's layout budget and estimates 24 KB of flash.
 
 See [Development](docs/DEVELOPMENT.md), [Hardware acceptance](docs/HARDWARE_ACCEPTANCE.md) and [Architecture](docs/ARCHITECTURE.md).
 Builds and previews run in GitHub Actions. A successful host preview is not a successful upload or physical touch test.

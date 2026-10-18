@@ -126,27 +126,39 @@ class OverviewTile : public tessera::Tile {
   void create(const tessera::TileContext &c) override {
     tile_ = c.tile; entity_ = c.entity; view_.create(c.parent, c.width, c.height, plugin_, false);
   }
-  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); on_tick(tessera::epoch()); }
-  void on_tick(uint32_t now) override { view_.paint(model_, now); }
-  void on_theme() override { view_.theme(); on_tick(tessera::epoch()); }
+  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); dirty_ = true; }
+  void on_tick(uint32_t now) override {
+    const Health health = model_.health(now);
+    if (!dirty_ && health == health_) return;
+    dirty_ = false; health_ = health; view_.paint(model_, now);
+  }
+  void on_theme() override { view_.theme(); }
   void on_tap() override { tessera::open_card(plugin_->plugin_id(), "dashboard", entity_.c_str(), tile_); }
  private:
   VictronVrm *plugin_;
   int tile_ = -1;
   tessera::Text entity_;
   Model model_;
+  Health health_ = Health::EMPTY;
+  bool dirty_ = true;
   DashboardView view_;
 };
 class DashboardCard : public tessera::Card {
  public:
   explicit DashboardCard(VictronVrm *plugin) : plugin_(plugin) {}
   void open(const tessera::CardContext &c) override { view_.create(c.parent, c.width, c.height, plugin_, true); }
-  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); on_tick(tessera::epoch()); }
-  void on_tick(uint32_t now) override { view_.paint(model_, now); }
-  void on_theme() override { view_.theme(); on_tick(tessera::epoch()); }
+  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); dirty_ = true; }
+  void on_tick(uint32_t now) override {
+    const Health health = model_.health(now);
+    if (!dirty_ && health == health_) return;
+    dirty_ = false; health_ = health; view_.paint(model_, now);
+  }
+  void on_theme() override { view_.theme(); }
  private:
   VictronVrm *plugin_;
   Model model_;
+  Health health_ = Health::EMPTY;
+  bool dirty_ = true;
   DashboardView view_;
 };
 void VictronVrm::setup() {

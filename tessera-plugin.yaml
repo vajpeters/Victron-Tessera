@@ -1,5 +1,5 @@
 id: victron_vrm
-version: 0.3.0
+version: 0.3.1
 api: '0.9'
 icon: solar-power
 maintainer: vajpeters
@@ -20,7 +20,7 @@ tiles:
   sizes:
     min: 1x1
     max: 5x5
-  memory: 12288
+  memory: 768
   domains:
   - sensor
   has_attributes:
