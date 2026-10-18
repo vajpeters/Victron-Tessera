@@ -16,14 +16,15 @@ python -m unittest discover -s tests -v
 g++ -std=c++17 -Wall -Wextra -Werror -pedantic tests/model_test.cpp -o model_test
 ./model_test
 TESSERA_MANIFEST=../tessera-core/screen_manager/app/plugin_manifest.py TESSERA_BOARDS=../tessera-core/screen_manager/app/boards.json python ../tessera-plugins/tools/check.py .
-python ../tessera-plugins/tools/preview.py --setup
+python tools/fix_preview_tools.py --plugins ../tessera-plugins
+TESSERA_TREE=../tessera-core python ../tessera-plugins/tools/preview.py --setup
 TESSERA_TREE=../tessera-core python ../tessera-plugins/tools/preview.py . --strict
-python ../tessera-plugins/tools/store_image.py . --from .preview
+TESSERA_TREE=../tessera-core python ../tessera-plugins/tools/store_image.py . --from .preview
 ```
 
 The native tests use the actual model header, not a second implementation. Python tests validate manifest/package
 mapping, source metadata and the absence of cloud access. The official preview compiles the whole plugin with Tessera.
-Its first run may take 20 minutes or more. Windows needs WSL for that host preview; GitHub Actions uses Ubuntu.
+The pinned preview bench needs the included subscription repair to deliver raw sensor states; the repair is tested against its actual callback and is confined to preview tooling. Its first run may take 20 minutes or more. Windows needs WSL for that host preview; GitHub Actions uses Ubuntu.
 Inspect `.preview/summary.json`, the actual tile and card PNGs and `store.png`. Never substitute a hand-drawn mockup.
 
 For repeatable edge cases change the synthetic `states` in `preview.yaml`: solar 0; battery positive/negative; net

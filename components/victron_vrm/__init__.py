@@ -7,7 +7,7 @@ from esphome.const import CONF_ID
 DEPENDENCIES = ["smart_display", "api"]
 ns = cg.esphome_ns.namespace("victron_vrm")
 VictronVrm = ns.class_("VictronVrm", cg.Component)
-METRICS = ("soc", "battery", "solar", "load", "grid", "voltage", "current")
+METRICS = ("soc", "battery", "solar", "load", "grid", "voltage", "current", "critical_load")
 schema = {cv.GenerateID(): cv.declare_id(VictronVrm)}
 for key in (*METRICS, *(m + "_unit" for m in METRICS), "source_time"):
     schema[cv.Required(key)] = cv.use_id(text_sensor.TextSensor)

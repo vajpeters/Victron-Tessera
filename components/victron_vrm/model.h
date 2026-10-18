@@ -7,7 +7,7 @@
 #include <cctype>
 
 namespace esphome::victron_vrm {
-enum Metric : unsigned { SOC, BATTERY, SOLAR, LOAD, GRID, VOLTAGE, CURRENT, COUNT };
+enum Metric : unsigned { SOC, BATTERY, SOLAR, LOAD, GRID, VOLTAGE, CURRENT, CRITICAL_LOAD, COUNT };
 struct Sample { double value = 0; bool valid = false; };
 inline bool numeric(const char *raw, double &out) {
   if (!raw || !*raw) return false;
@@ -30,11 +30,11 @@ class Model {
     if (!numeric(raw, number) || !unit) return;
     if (metric == SOC) {
       if (std::strcmp(unit, "%") || number < 0 || number > 100) return;
-    } else if (metric >= BATTERY && metric <= GRID) {
+    } else if ((metric >= BATTERY && metric <= GRID) || metric == CRITICAL_LOAD) {
       if (!std::strcmp(unit, "kW")) scale = 1000;
       else if (!std::strcmp(unit, "MW")) scale = 1000000;
       else if (std::strcmp(unit, "W")) return;
-      if ((metric == SOLAR || metric == LOAD) && number < 0) return;
+      if ((metric == SOLAR || metric == LOAD || metric == CRITICAL_LOAD) && number < 0) return;
     } else if (metric == VOLTAGE) {
       if (!std::strcmp(unit, "mV")) scale = .001;
       else if (std::strcmp(unit, "V")) return;

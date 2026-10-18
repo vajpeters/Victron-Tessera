@@ -13,15 +13,15 @@
     "reverse_grid": "Net terugleveren is positief",
     "reverse_grid_hint": "Aan als de gekozen netsensor positief vermogen meldt bij teruglevering.",
     "max_age": "Maximale meetleeftijd",
-    "max_age_hint": "Alleen met gekoppelde bron-tijdstempel. Zonder tijdstempel is de leeftijd onbekend.",
-    "input_source_time": "Bron-tijdstempel (optioneel)",
-    "hint_source_time": "Epochseconden, geen milliseconden of ISO-tekst. Kies een sensor die deze meetset dateert.",
+    "max_age_hint": "Alleen met het optionele attribuut victron_timestamp van de laadsensor. Zonder tijdstempel is de leeftijd onbekend.",
     "input_soc": "Acculaadniveau",
-    "hint_soc": "Kies een bestaande Home Assistant-sensor. Eenheid: %. Geen afleiding uit andere sensoren.",
+    "hint_soc": "Kies een bestaande Home Assistant-sensor. Eenheid: %. Optioneel attribuut victron_timestamp bevat epochseconden voor dezelfde meetset; zonder dit attribuut blijft de leeftijd onbekend.",
     "input_battery": "Accuvermogen",
     "hint_battery": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren.",
     "input_solar": "Zonneproductie",
     "hint_solar": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren. Kies het totaal van alle zonnebronnen.",
+    "input_critical_load": "Kritieke verbruikers (optioneel)",
+    "hint_critical_load": "Kies een bestaande sensor voor kritieke AC-verbruikers. Eenheid: W, kW of MW. Laat leeg indien niet beschikbaar; geen afleiding uit AC-verbruik.",
     "input_load": "AC-verbruik",
     "hint_load": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren. Kies AC-verbruik in vermogen, geen energiemeter in kWh.",
     "input_grid": "Netvermogen",
@@ -33,8 +33,9 @@
   },
   "screen": {
     "soc": "Accu",
-    "solar": "Zon",
+    "solar": "Zon / PV",
     "load": "AC-verbruik",
+    "critical_load": "Kritieke verbruikers",
     "grid": "Net",
     "battery_power": "Accuvermogen",
     "charging": "Laden",
@@ -52,6 +53,8 @@
     "reverse_grid": "Terugleveren positief",
     "max_age": "Verouderd na",
     "import": "Afname",
-    "export": "Teruglevering"
+    "export": "Teruglevering",
+    "inverter": "Omvormer",
+    "not_mapped": "Geen meting"
   }
 }

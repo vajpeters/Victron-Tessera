@@ -8,10 +8,15 @@ tiles:
   - 3x2
   - 5x4
 states:
+  sensor.victron_vrm_unassigned_critical_load:
+    state: '650'
+    attributes:
+      unit_of_measurement: W
   sensor.victron_vrm_unassigned_soc:
     state: '78.5'
     attributes:
       unit_of_measurement: '%'
+      victron_timestamp: '{epoch-60s}'
   sensor.victron_vrm_unassigned_battery:
     state: '-0.45'
     attributes:
@@ -36,7 +41,4 @@ states:
     state: '-8.6'
     attributes:
       unit_of_measurement: A
-  sensor.victron_vrm_unassigned_source_time:
-    state: '{epoch-60s}'
-    attributes: {}
 time_zone: Europe/Amsterdam

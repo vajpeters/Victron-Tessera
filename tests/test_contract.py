@@ -19,13 +19,20 @@ class Contract(unittest.TestCase):
         self.assertEqual({'{'+i['id']+'}' for i in inputs},set(self.manifest['permissions']['read_entities']))
     def test_value_and_unit_subscribe_to_same_user_choice(self):
         sensors={s['id']:s for s in self.package['text_sensor']}
-        self.assertEqual(15,len(sensors))
-        for metric in ('soc','battery','solar','load','grid','voltage','current'):
+        self.assertEqual(17,len(sensors))
+        for metric in ('soc','battery','solar','load','grid','voltage','current','critical_load'):
             value,unit=sensors['vrm_'+metric+'_value'],sensors['vrm_'+metric+'_unit']
             self.assertEqual('${'+metric.upper()+'}',value['entity_id'])
             self.assertEqual(value['entity_id'],unit['entity_id'])
             self.assertEqual('unit_of_measurement',unit['attribute'])
             self.assertTrue(value['internal'] and unit['internal'])
+            self.assertEqual(value['id'],self.package['victron_vrm'][metric])
+            self.assertEqual(unit['id'],self.package['victron_vrm'][metric+'_unit'])
+        timestamp=sensors['vrm_source_time']
+        self.assertEqual(sensors['vrm_soc_value']['entity_id'],timestamp['entity_id'])
+        self.assertEqual('victron_timestamp',timestamp['attribute'])
+        self.assertTrue(timestamp['internal'])
+        self.assertNotIn('SOURCE_TIME',self.package['defaults'])
     def test_sign_settings_are_persisted_and_exposed(self):
         self.assertEqual(2,len(self.package['switch']))
         for switch in self.package['switch']:
@@ -38,7 +45,7 @@ class Contract(unittest.TestCase):
         nl=json.loads((ROOT/'translations/nl.json').read_text(encoding='utf-8'))
         self.assertEqual(set(en['screen']),set(nl['screen']))
         self.assertEqual(set(en['app']),set(nl['app']))
-        code=(ROOT/'components/victron_vrm/victron_vrm.cpp').read_text()
+        code='\n'.join(p.read_text() for p in (ROOT/'components/victron_vrm').glob('*') if p.suffix in ('.h','.cpp'))
         for key in re.findall(r'(?:plugin_->)?text\("([a-z_]+)"\)',code):
             self.assertIn(key,en['screen'])
     def test_preview_uses_synthetic_home_assistant_states(self):
@@ -46,6 +53,7 @@ class Contract(unittest.TestCase):
         self.assertNotIn('answers',preview)
         self.assertEqual(8,len(preview['states']))
         for key in self.package['defaults'].values(): self.assertIn(key,preview['states'])
+        self.assertEqual('{epoch-60s}',preview['states'][self.package['defaults']['SOC']]['attributes']['victron_timestamp'])
     def test_plugin_does_not_take_over_network_or_core(self):
         for forbidden in ('api','wifi','ota','esphome','mqtt','http_request','packages','external_components'):
             self.assertNotIn(forbidden,self.package)

@@ -13,15 +13,15 @@
     "reverse_grid": "Grid export is positive",
     "reverse_grid_hint": "Turn on if your mapped grid power sensor reports positive power when exporting.",
     "max_age": "Maximum measurement age",
-    "max_age_hint": "Only used with a mapped source timestamp. No timestamp means age unknown.",
-    "input_source_time": "Source timestamp (optional)",
-    "hint_source_time": "Epoch seconds (not milliseconds or ISO text). Choose a sensor that timestamps this measurement set.",
+    "max_age_hint": "Only used with the SOC sensor's optional victron_timestamp attribute. No timestamp means age unknown.",
     "input_soc": "Battery state of charge",
-    "hint_soc": "Choose an existing Home Assistant sensor. Unit: %. Values are not inferred from other sensors.",
+    "hint_soc": "Choose an existing Home Assistant sensor. Unit: %. Optional attribute victron_timestamp must contain epoch seconds for the same measurement set; without it age stays unknown.",
     "input_battery": "Battery power",
     "hint_battery": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors.",
     "input_solar": "Solar power",
     "hint_solar": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors. Map a total of all your solar sources.",
+    "input_critical_load": "Critical loads (optional)",
+    "hint_critical_load": "Choose an existing sensor for critical AC loads. Unit: W, kW or MW. Leave unselected if unavailable; no value is inferred from AC consumption.",
     "input_load": "AC consumption",
     "hint_load": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors. Map AC consumption power, not an energy meter in kWh.",
     "input_grid": "Grid power",
@@ -33,8 +33,9 @@
   },
   "screen": {
     "soc": "Battery",
-    "solar": "Solar",
-    "load": "AC use",
+    "solar": "Solar / PV",
+    "load": "AC Loads",
+    "critical_load": "Critical loads",
     "grid": "Grid",
     "battery_power": "Battery power",
     "charging": "Charging",
@@ -52,6 +53,8 @@
     "reverse_grid": "Export positive",
     "max_age": "Old after",
     "import": "Import",
-    "export": "Export"
+    "export": "Export",
+    "inverter": "Inverter",
+    "not_mapped": "No reading"
   }
 }

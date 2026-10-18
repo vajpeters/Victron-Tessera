@@ -6,7 +6,7 @@ defaults:
   GRID: sensor.victron_vrm_unassigned_grid
   VOLTAGE: sensor.victron_vrm_unassigned_voltage
   CURRENT: sensor.victron_vrm_unassigned_current
-  SOURCE_TIME: sensor.victron_vrm_unassigned_source_time
+  CRITICAL_LOAD: sensor.victron_vrm_unassigned_critical_load
 text_sensor:
 - platform: homeassistant
   id: vrm_soc_value
@@ -73,7 +73,17 @@ text_sensor:
   internal: true
 - platform: homeassistant
   id: vrm_source_time
-  entity_id: ${SOURCE_TIME}
+  entity_id: ${SOC}
+  attribute: victron_timestamp
+  internal: true
+- platform: homeassistant
+  id: vrm_critical_load_value
+  entity_id: ${CRITICAL_LOAD}
+  internal: true
+- platform: homeassistant
+  id: vrm_critical_load_unit
+  entity_id: ${CRITICAL_LOAD}
+  attribute: unit_of_measurement
   internal: true
 switch:
 - platform: template
@@ -108,6 +118,7 @@ victron_vrm:
   grid: vrm_grid_value
   voltage: vrm_voltage_value
   current: vrm_current_value
+  critical_load: vrm_critical_load_value
   soc_unit: vrm_soc_unit
   battery_unit: vrm_battery_unit
   solar_unit: vrm_solar_unit
@@ -115,6 +126,7 @@ victron_vrm:
   grid_unit: vrm_grid_unit
   voltage_unit: vrm_voltage_unit
   current_unit: vrm_current_unit
+  critical_load_unit: vrm_critical_load_unit
   source_time: vrm_source_time
   battery_reverse: vrm_battery_reverse
   grid_reverse: vrm_grid_reverse

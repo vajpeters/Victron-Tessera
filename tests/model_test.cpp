@@ -31,6 +31,20 @@ int main() {
   m=normal(); m.signs(true,true); assert(m.get(BATTERY).value==450 && m.get(GRID).value==-150);
   m=normal(); m.set(GRID,"-2.5","kW"); assert(m.get(GRID).value==-2500);
   m=normal(); m.set(SOLAR,"1.2","MW"); assert(m.get(SOLAR).value==1200000);
+  // Critical loads are independently mapped and optional, never inferred from AC consumption.
+  m=normal(); assert(!m.get(CRITICAL_LOAD).valid && m.health(now)==Health::OK);
+  m.set(CRITICAL_LOAD,".65","kW");
+  assert(m.get(CRITICAL_LOAD).valid && m.get(CRITICAL_LOAD).value==650);
+  assert(m.get(LOAD).value==1800);
+  m.set(CRITICAL_LOAD,"0","W");
+  assert(m.get(CRITICAL_LOAD).valid && m.get(CRITICAL_LOAD).value==0);
+  for (const char *bad : {"-1", "unavailable"}) {
+    m.set(CRITICAL_LOAD,bad,"W");
+    assert(!m.get(CRITICAL_LOAD).valid && m.health(now)==Health::OK);
+  }
+  m.set(CRITICAL_LOAD,"3","kWh"); assert(!m.get(CRITICAL_LOAD).valid);
+  m.set(CRITICAL_LOAD,".001","MW");
+  assert(m.get(CRITICAL_LOAD).valid && m.get(CRITICAL_LOAD).value==1000);
   // A finite source value may overflow while converting to watts; clear the previous reading.
   m=normal(); m.set(SOLAR,"1e308","MW");
   assert(!m.get(SOLAR).valid && m.health(now)==Health::PARTIAL);

@@ -41,11 +41,15 @@ static const char *health_key(Health h) {
   }
 }
 
+#include "flow_view.h"
+
 // Every object belongs to the current tile/card. Updates only paint existing labels.
 class DashboardView {
  public:
   void create(lv_obj_t *parent, int width, int height, const tessera::Plugin *plugin, bool detail) {
     plugin_ = plugin; width_ = width;
+    flow_ = width >= ui::mm(110) && height >= ui::mm(75);
+    if (flow_) { flow_view_.create(parent, width, height, plugin); return; }
     const int body = ui::line_height(Font::BODY), gap = ui::px(4);
     footer_ = ui::label(parent, Font::BODY, theme::MUTED);
     lv_obj_set_size(footer_, width, body); lv_obj_set_pos(footer_, 0, std::max(0, height - body));
@@ -69,6 +73,7 @@ class DashboardView {
     }
   }
   void theme() {
+    if (flow_) { flow_view_.theme(); return; }
     ui::set_color(footer_, theme::MUTED);
     for (int i = 0; i < count_; ++i) {
       ui::set_color(names_[i], theme::MUTED); ui::set_color(values_[i], theme::INK);
@@ -76,6 +81,7 @@ class DashboardView {
     }
   }
   void paint(const Model &m, uint32_t now) {
+    if (flow_) { flow_view_.paint(m, now); return; }
     const Sample battery = m.get(BATTERY), grid = m.get(GRID);
     const char *battery_key = !battery.valid ? "battery_power" :
       battery.value > 30 ? "charging" : battery.value < -30 ? "discharging" : "idle";
@@ -105,6 +111,8 @@ class DashboardView {
     ui::set_color(footer_, health == Health::OLD ? theme::INK : theme::MUTED);
   }
  private:
+  bool flow_ = false;
+  FlowView flow_view_;
   const tessera::Plugin *plugin_ = nullptr;
   int width_ = 0, count_ = 0, columns_ = 1, cell_width_ = 0, cell_height_ = 0;
   lv_obj_t *footer_ = nullptr, *names_[7]{}, *values_[7]{}, *bars_[7]{};

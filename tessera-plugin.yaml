@@ -1,5 +1,5 @@
 id: victron_vrm
-version: 0.1.0
+version: 0.2.0
 api: '0.9'
 icon: solar-power
 maintainer: vajpeters
@@ -20,7 +20,7 @@ permissions:
   - '{grid}'
   - '{voltage}'
   - '{current}'
-  - '{source_time}'
+  - '{critical_load}'
 attributes:
 - ai-developed
 inputs:
@@ -73,13 +73,13 @@ inputs:
   scope: screen
   label: input_current
   hint: hint_current
-- id: source_time
+- id: critical_load
   kind: entity
   domains:
   - sensor
   scope: screen
-  label: input_source_time
-  hint: hint_source_time
+  label: input_critical_load
+  hint: hint_critical_load
 tiles:
 - id: overview
   name: tile_name
@@ -87,7 +87,7 @@ tiles:
   sizes:
     min: 1x1
     max: 5x4
-  memory: 8192
+  memory: 12288
   example: tile_example
 cards:
 - id: dashboard
