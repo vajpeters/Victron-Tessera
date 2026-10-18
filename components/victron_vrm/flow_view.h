@@ -5,7 +5,7 @@ class FlowView {
   void create(lv_obj_t *parent, int width, int height, const tessera::Plugin *plugin) {
     plugin_ = plugin; width_ = width;
     const int gap = ui::px(12), body = ui::line_height(Font::BODY);
-    const int icon = ui::line_height(Font::ICON_SMALL), header = std::max(body, icon);
+    const int icon = ui::line_height(Font::ICON_SMALL), header = std::max(ui::line_height(Font::TITLE), icon);
     const int room = height - body - gap;
     const int cw = (width - gap * 2) / 3, ch = room * 34 / 100;
     const int bottom = room - ch, mid = (ch + bottom) / 2;
@@ -32,8 +32,10 @@ class FlowView {
       c.value_height = ch - body * 2 - gap * 3 - header;
       c.icon = label(parent, tx, ty, icon, Font::ICON_SMALL, accents[i]);
       ui::set_text(c.icon, ui::icon(glyphs[i]));
-      c.title = label(parent, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::BODY, theme::INK);
-      c.value = label(parent, tx, ty + header + gap / 2, c.width, Font::TITLE, theme::INK);
+      c.title = label(parent, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::TITLE, theme::INK);
+      c.value_x = tx; c.value_y = ty + header + gap / 2;
+      c.value = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
+      c.unit = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
       c.rule = box(parent, xs[i] + 1, ys[i] + ch - body * 2 - gap, cw - 2, 1, theme::LINE, 0);
       c.note = label(parent, tx, ys[i] + ch - body * 2 - gap / 2, c.width, Font::BODY, theme::MUTED);
       c.extra = label(parent, tx, ys[i] + ch - body - gap / 2, c.width, Font::BODY, theme::MUTED);
@@ -67,7 +69,7 @@ class FlowView {
       ui::set_fill(c.frame, tessera::Tone::NORMAL, theme::LINE);
       ui::set_fill(c.surface, tessera::Tone::NORMAL, theme::CARD);
       ui::set_fill(c.rule, tessera::Tone::NORMAL, theme::LINE);
-      ui::set_color(c.title, theme::INK); ui::set_color(c.value, theme::INK);
+      ui::set_color(c.title, theme::INK); ui::set_color(c.value, theme::INK); ui::set_color(c.unit, theme::INK);
       ui::set_color(c.note, theme::MUTED); ui::set_color(c.extra, theme::MUTED);
     }
     const theme::Role accents[5] = {theme::INK, theme::MARK_GREEN, theme::MARK_AMBER, theme::MARK_BLUE, theme::MARK_AMBER};
@@ -86,12 +88,31 @@ class FlowView {
     for (int i = 0; i < 5; ++i) {
       auto &c = cards_[i]; ui::set_text(c.title, plugin_->text(keys[i]));
       std::string text = value(m.get(metrics[i]), i == 3 ? "%" : "W", i == 3 ? 1 : 0, i == 0);
-      Font face = Font::BODY;
-      const int available = c.value_height;
-      for (Font f : {Font::VALUE, Font::HEADLINE, Font::TITLE, Font::BODY}) {
-        if (ui::text_width(text, f) <= c.width && ui::line_height(f) <= available) { face = f; break; }
+      const auto split = text.find_last_of(' ');
+      const std::string number = split == std::string::npos ? text : text.substr(0, split);
+      const std::string unit = split == std::string::npos ? "" : text.substr(split + 1);
+      Font face = Font::BODY, unit_face = Font::BODY;
+      bool fits = false;
+      const int spacing = unit.empty() ? 0 : ui::px(6);
+      for (Font f : {Font::DIGITS, Font::VALUE, Font::HEADLINE, Font::TITLE, Font::BODY}) {
+        if (!ui::covers(number, f) || ui::line_height(f) > c.value_height) continue;
+        for (Font u : {Font::TITLE, Font::BODY}) {
+          if ((!unit.empty() && ui::line_height(u) > c.value_height) ||
+              ui::text_width(number, f) + spacing + ui::text_width(unit, u) > c.width) continue;
+          face = f; unit_face = u; fits = true; break;
+        }
+        if (fits) break;
       }
-      ui::set_font(c.value, face); ui::set_text(c.value, text);
+      const int number_width = std::min(c.width, ui::text_width(number, face));
+      const int unit_width = unit.empty() ? 0 : std::max(0, c.width - number_width - spacing);
+      const int row_height = std::max(ui::line_height(face), unit.empty() ? 0 : ui::line_height(unit_face));
+      ui::set_font(c.value, face); ui::set_text(c.value, number);
+      lv_obj_set_width(c.value, number_width);
+      lv_obj_set_pos(c.value, c.value_x, c.value_y + row_height - ui::line_height(face));
+      ui::set_font(c.unit, unit_face); ui::set_text(c.unit, unit);
+      lv_obj_set_width(c.unit, std::max(1, unit_width));
+      lv_obj_set_pos(c.unit, c.value_x + number_width + (unit.empty() ? 0 : spacing),
+                     c.value_y + row_height - ui::line_height(unit_face));
       ui::set_text(c.note, ""); ui::set_text(c.extra, "");
     }
     ui::set_text(cards_[0].note, plugin_->text(!grid.valid ? "not_mapped" : grid.value > 0 ? "import" : grid.value < 0 ? "export" : "idle"));
@@ -116,8 +137,8 @@ class FlowView {
   }
  private:
   struct CardParts {
-    lv_obj_t *frame{}, *surface{}, *icon{}, *title{}, *value{}, *rule{}, *note{}, *extra{};
-    int width{}, height{}, value_height{};
+    lv_obj_t *frame{}, *surface{}, *icon{}, *title{}, *value{}, *unit{}, *rule{}, *note{}, *extra{};
+    int width{}, height{}, value_height{}, value_x{}, value_y{};
   } cards_[5];
   const tessera::Plugin *plugin_{};
   int width_{}, line_count_{};

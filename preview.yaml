@@ -2,11 +2,11 @@ tiles:
 - tile: overview
   name: Victron VRM
   sizes:
-  - 1x1
-  - 2x1
-  - 2x2
-  - 3x2
   - 5x4
+  - 3x2
+  - 2x2
+  - 2x1
+  - 1x1
 states:
   sensor.victron_vrm_unassigned_critical_load:
     state: '650'
