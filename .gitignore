@@ -1,0 +1,11 @@
+.preview/
+.tools/
+.build/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+secrets.yaml
+*.bin
+*.elf

@@ -1,0 +1,104 @@
+id: victron_vrm
+version: 0.1.0
+api: '0.9'
+icon: solar-power
+maintainer: vajpeters
+license: MIT
+stage: beta
+topics:
+- energy
+requires:
+  esphome: 2026.6.2
+boards: any
+flash_kb: 24
+permissions:
+  read_entities:
+  - '{soc}'
+  - '{battery}'
+  - '{solar}'
+  - '{load}'
+  - '{grid}'
+  - '{voltage}'
+  - '{current}'
+  - '{source_time}'
+attributes:
+- ai-developed
+inputs:
+- id: soc
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_soc
+  hint: hint_soc
+- id: battery
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_battery
+  hint: hint_battery
+- id: solar
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_solar
+  hint: hint_solar
+- id: load
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_load
+  hint: hint_load
+- id: grid
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_grid
+  hint: hint_grid
+- id: voltage
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_voltage
+  hint: hint_voltage
+- id: current
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_current
+  hint: hint_current
+- id: source_time
+  kind: entity
+  domains:
+  - sensor
+  scope: screen
+  label: input_source_time
+  hint: hint_source_time
+tiles:
+- id: overview
+  name: tile_name
+  icon: solar-power
+  sizes:
+    min: 1x1
+    max: 5x4
+  memory: 8192
+  example: tile_example
+cards:
+- id: dashboard
+  name: card_name
+settings:
+- key: vrm_battery_discharge_positive
+  label: reverse_battery
+  hint: reverse_battery_hint
+- key: vrm_grid_export_positive
+  label: reverse_grid
+  hint: reverse_grid_hint
+- key: vrm_measurement_maximum_age
+  label: max_age
+  hint: max_age_hint

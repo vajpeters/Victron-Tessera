@@ -1,0 +1,51 @@
+{
+  "provenance": "Synthetic data, no live installation capture",
+  "states": {
+    "sensor.victron_vrm_unassigned_soc": {
+      "state": "78.5",
+      "attributes": {
+        "unit_of_measurement": "%"
+      }
+    },
+    "sensor.victron_vrm_unassigned_battery": {
+      "state": "-0.45",
+      "attributes": {
+        "unit_of_measurement": "kW"
+      }
+    },
+    "sensor.victron_vrm_unassigned_solar": {
+      "state": "1.2",
+      "attributes": {
+        "unit_of_measurement": "kW"
+      }
+    },
+    "sensor.victron_vrm_unassigned_load": {
+      "state": "1800",
+      "attributes": {
+        "unit_of_measurement": "W"
+      }
+    },
+    "sensor.victron_vrm_unassigned_grid": {
+      "state": "150",
+      "attributes": {
+        "unit_of_measurement": "W"
+      }
+    },
+    "sensor.victron_vrm_unassigned_voltage": {
+      "state": "52.4",
+      "attributes": {
+        "unit_of_measurement": "V"
+      }
+    },
+    "sensor.victron_vrm_unassigned_current": {
+      "state": "-8.6",
+      "attributes": {
+        "unit_of_measurement": "A"
+      }
+    },
+    "sensor.victron_vrm_unassigned_source_time": {
+      "state": "{epoch-60s}",
+      "attributes": {}
+    }
+  }
+}

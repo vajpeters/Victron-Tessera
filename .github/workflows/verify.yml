@@ -1,0 +1,70 @@
+name: Verify plugin
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  TESSERA_COMMIT: c49854c8567fd079678445761a3a712736afc42b
+  PLUGINS_COMMIT: 69a0264063c9dc8fb105b833b19c26cb47a5a23e
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      - run: python -m unittest discover -s tests -v
+      - run: g++ -std=c++17 -Wall -Wextra -Werror -pedantic tests/model_test.cpp -o /tmp/model-test && /tmp/model-test
+      - name: Get pinned upstream tools
+        run: |
+          git clone https://github.com/MaxGramser/tessera-plugins ../tessera-plugins
+          git -C ../tessera-plugins checkout "$PLUGINS_COMMIT"
+          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git -C ../tessera-core checkout "$TESSERA_COMMIT"
+      - name: Official Tessera plugin check
+        run: |
+          export TESSERA_MANIFEST="$GITHUB_WORKSPACE/../tessera-core/screen_manager/app/plugin_manifest.py"
+          export TESSERA_BOARDS="$GITHUB_WORKSPACE/../tessera-core/screen_manager/app/boards.json"
+          python ../tessera-plugins/tools/check.py .
+  preview:
+    needs: unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Get pinned upstream tools
+        run: |
+          git clone https://github.com/MaxGramser/tessera-plugins ../tessera-plugins
+          git -C ../tessera-plugins checkout "$PLUGINS_COMMIT"
+          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git -C ../tessera-core checkout "$TESSERA_COMMIT"
+      - name: Install host build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev python3-venv
+      - name: Prepare official preview bench
+        env:
+          TESSERA_TREE: ${{ github.workspace }}/../tessera-core
+        run: python ../tessera-plugins/tools/preview.py --setup
+      - name: Compile and audit real firmware previews
+        env:
+          TESSERA_TREE: ${{ github.workspace }}/../tessera-core
+          TESSERA_MANIFEST: ${{ github.workspace }}/../tessera-core/screen_manager/app/plugin_manifest.py
+          TESSERA_BOARDS: ${{ github.workspace }}/../tessera-core/screen_manager/app/boards.json
+        run: python ../tessera-plugins/tools/preview.py . --strict
+      - name: Generate store image from verified firmware
+        run: python ../tessera-plugins/tools/store_image.py . --from .preview
+      - name: Preserve previews and diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-previews
+          include-hidden-files: true
+          path: |
+            .preview/
+            store.png
