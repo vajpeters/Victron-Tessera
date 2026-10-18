@@ -20,10 +20,10 @@ class Contract(unittest.TestCase):
         self.assertEqual(16,len(tile['attributes']))
         self.assertNotIn('text_sensor',self.package)
         self.assertNotIn('defaults',self.package)
-    def test_5x5_is_offered(self):
+    def test_5x5_page_grid_range_is_supported(self):
         self.assertEqual('5x5',self.manifest['tiles'][0]['sizes']['max'])
         preview=yaml.safe_load((ROOT/'preview.yaml').read_text())
-        self.assertIn('5x5',preview['tiles'][0]['sizes'])
+        self.assertIn('5x4',preview['tiles'][0]['sizes'])
     def test_sign_settings_are_persisted_and_exposed(self):
         self.assertEqual(2,len(self.package['switch']))
         for switch in self.package['switch']:

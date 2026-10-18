@@ -20,3 +20,5 @@ The strict bench checks light/dark themes, tile sizes, taps, detail cards and se
 All previews use synthetic measurements. No live Home Assistant installation, physical display, touch controller or Victron equipment was exercised. No device was flashed, deployable firmware published or release created. The compile profile uses throwaway credentials and must never be installed. See [hardware acceptance](HARDWARE_ACCEPTANCE.md) for the remaining physical checks.
 
 Large-card direction arrows require valid, fresh measurements and a genuine `source_time` attribute on the selected dashboard sensor. Without it, the view reports age unknown and retains static connection lines. History graphs, individual MPPT details and phase calculations are not implemented.
+
+The primary JC8012P4A1 validation runs on its native 5x5 page grid. The largest landscape plugin span is 5x4 because Tessera reserves the exact 5x5 footprint for its named `full` size, which plugin tiles cannot request in the editor yet.

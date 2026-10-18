@@ -12,7 +12,7 @@ Een native Tessera-dashboard voor je eigen Victron-sensoren in Home Assistant. D
 4. Kies je scherm en selecteer **Opslaan en bouwen**. Bij deze firmwarebouw hoef je geen sensoren te kiezen.
 5. Plaats **Victron-dashboard** in de indeling en kies de dashboardsensor in de instellingen van de tegel.
 6. Kies daar ook een van de gewone Tessera-achtergrondkleuren.
-7. Gebruik op het 10,1-inchscherm bij voorkeur 5x5. Kleinere formaten van 1x1 tot en met 5x5 blijven ondersteund.
+7. Gebruik op het liggende 10,1-inchscherm bij voorkeur 5x4. De pagina zelf heeft een 5x5-raster. Tessera noemt een tegel die exact het hele 5x5-raster vult `full`; de plug-inbewerker biedt dat formaat nog niet aan.
 
 Je kunt de dashboardsensor en achtergrondkleur later wijzigen zonder de firmware opnieuw te bouwen. Iedere tegel kan een eigen dashboardsensor gebruiken.
 
@@ -26,7 +26,7 @@ Vermogen mag W, kW of MW zijn; kWh en VA worden niet als W gelezen. De plug-in t
 
 ## Victron-indeling
 
-Ruime tegels en de detailkaart tonen Net, AC-verbruik en Kritieke verbruikers bovenaan, een omvormersymbool in het midden, en Accu en Zon/PV onderaan. Kleine tegels gebruiken de compacte weergave. De gekozen Tessera-kleur vult de achtergrond en kleurt de lichte panelen subtiel mee.
+Ruime tegels en de detailkaart tonen Net, AC-verbruik en Kritieke verbruikers bovenaan, een omvormersymbool in het midden, en Accu en Zon/PV onderaan. De plug-in werkt op het 5x5-paginaraster; 5x4 liggend en 4x5 staand passen binnen dat raster. Kleine tegels gebruiken de compacte weergave. De gekozen Tessera-kleur vult de achtergrond en kleurt de lichte panelen subtiel mee.
 
 Pijlen verschijnen alleen bij geldige, verse metingen boven 1 W. Het omvormersymbool meldt geen gemeten bedrijfsstatus. Historische grafieken, MPPT-details en andere ontbrekende gegevens uit het Victron-voorbeeld worden niet nagebootst.
 

@@ -4,7 +4,7 @@ A native monitoring dashboard for [Tessera](https://github.com/MaxGramser/homeas
 The Home Assistant source is selected when you add or edit the tile, so changing it does not rebuild the screen firmware.
 No VRM access token is needed by this plugin. This is an independent community project, not an official Victron product.
 
-The first target is a 10.1-inch display with a single-phase installation. Large tiles and detail cards use a Victron-style schematic: Grid, AC Loads and Critical Loads above a central inverter, with Battery and Solar below. The tile supports every size from 1x1 through 5x5; smaller tiles use a compact readings layout.
+The first target is a 10.1-inch display with a single-phase installation. Large tiles and detail cards use a Victron-style schematic: Grid, AC Loads and Critical Loads above a central inverter, with Battery and Solar below. The tile works on Tessera's 5x5 page grid and keeps a compact readings layout at smaller sizes.
 Three-phase calculation and per-phase views are reserved for a later version. You can supply an existing correct three-phase total, but the plugin does not calculate that total itself.
 
 ![10.1-inch firmware preview with synthetic measurements](docs/images/dashboard-light.png)
@@ -19,7 +19,7 @@ This is the actual compiled detail card with synthetic Home Assistant measuremen
 4. Choose your screen and select **Save and build**. No sensor IDs are requested or compiled into the firmware.
 5. Add **Victron dashboard** to the layout. In the tile inspector select your dashboard sensor.
 6. Select any standard Tessera background colour in the same inspector. The colour fills the backdrop and softly tints the Victron panels.
-7. For the 10.1-inch screen, use 5x5 for the largest layout. Tap the tile for the full detail card.
+7. For the 10.1-inch landscape screen, use 5x4. Tessera names an exact 5x5 page-sized tile `full`, which its plugin editor does not offer yet; tap the 5x4 tile for the full detail card.
 8. If needed, change **Battery discharge is positive** and **Grid export is positive** in the plugin settings.
 
 Every tile can select a different dashboard sensor. Changing the selected entity or background colour is a layout change and does not require a firmware rebuild.

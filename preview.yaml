@@ -2,7 +2,6 @@ tiles:
 - tile: overview
   name: Victron VRM
   sizes:
-  - 5x5
   - 5x4
   - 3x2
   - 2x2

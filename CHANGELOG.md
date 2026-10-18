@@ -2,7 +2,7 @@
 
 ## 0.3.0
 - Choose the Home Assistant dashboard sensor while adding or editing each tile; changing it no longer rebuilds firmware.
-- Added 5x5 to the supported tile range and the official preview matrix.
+- Supports Tessera's 5x5 page grid, including 5x4 landscape and 4x5 portrait spans.
 - The standard Tessera background-colour picker now colours the dashboard backdrop and softly tints its Victron panels.
 - Replaced the eight build-time sensor subscriptions with one runtime dashboard-sensor contract.
 
