@@ -8,6 +8,10 @@ The first target is a 10.1-inch display with a single-phase installation. Large 
 Three-phase calculation and per-phase views are reserved for a later version. You may map an existing, correct three-phase
 total sensor, but this version does not calculate that total itself.
 
+![10.1-inch firmware preview with synthetic measurements](docs/images/dashboard-light.png)
+
+This is the actual compiled detail card with synthetic Home Assistant measurements. [Dark preview](docs/images/dashboard-dark.png).
+
 ## Set up
 
 1. Install a Victron integration in Home Assistant and check that its sensors work.

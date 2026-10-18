@@ -3,6 +3,10 @@
 Een native Tessera-dashboard voor je eigen Victron-sensoren in Home Assistant.
 De eerste versie richt zich op een 10,1-inchscherm en een eenfase-installatie.
 
+![Firmwarepreview op 10,1 inch met testgegevens](docs/images/dashboard-light.png)
+
+Dit is de werkelijk gerenderde detailkaart met synthetische Home Assistant-metingen. [Nachtweergave](docs/images/dashboard-dark.png).
+
 ## Instellen
 
 1. Zorg dat je Victron-sensoren in Home Assistant de juiste waarden tonen.
