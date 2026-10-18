@@ -70,7 +70,7 @@ class Model {
     if (!any) return Health::EMPTY;
     if (disconnected) return Health::OLD;
     if (at && now && ((at > now && at - now > 300u) || (now > at && now - at > MAX_AGE))) return Health::OLD;
-    if (!get(SOC).valid || !get(BATTERY).valid || !get(SOLAR).valid || !get(LOAD).valid) return Health::PARTIAL;
+    if ((!get(SOC).valid && !get(BATTERY).valid) || !get(SOLAR).valid || !get(LOAD).valid) return Health::PARTIAL;
     if (!at) return Health::UNKNOWN_TIME;
     if (!now) return Health::CLOCK;
     return Health::OK;

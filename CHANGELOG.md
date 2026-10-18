@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+- Adds five separate, searchable Home Assistant entity selectors for Grid, AC Loads, Critical Loads, Battery and Solar / PV.
+- Keeps every source in the tile configuration, so changing a sensor does not rebuild the firmware.
+- Requires Tessera plugin API 0.15, which follows all selected option entities and sends their current states to the tile.
+
 ## 0.3.2
 - Removes the battery-sign, grid-sign and maximum-measurement-age settings.
 - Uses one fixed data contract: battery power is positive while charging, grid power is positive while importing, and timestamped measurements become old after 15 minutes.

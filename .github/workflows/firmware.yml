@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      TESSERA_COMMIT: c49854c8567fd079678445761a3a712736afc42b
+      TESSERA_COMMIT: ca3d6cd2c8eea6b55b8b0f552a44500726fd26bf
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,7 +16,7 @@ jobs:
           python-version: '3.12'
       - name: Get pinned Tessera firmware
         run: |
-          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git clone https://github.com/vajpeters/homeassistant_espscreen ../tessera-core
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
       - run: pip install esphome==2026.9.0
       - name: Cache firmware build tools

@@ -7,7 +7,12 @@
     "summary": "Je Victron-sensoren overzichtelijk op je Tessera-scherm.",
     "tile_name": "Victron-dashboard",
     "card_name": "Victron-details",
-    "tile_example": "Kies een Victron-dashboardsensor"
+    "tile_example": "Kies de entiteiten voor Net, AC-verbruik, Kritieke verbruikers, Accu en Zon / PV",
+    "source_grid": "Entiteit voor Net",
+    "source_ac_load": "Entiteit voor AC-verbruik",
+    "source_critical_load": "Entiteit voor Kritieke verbruikers",
+    "source_battery": "Entiteit voor Accu",
+    "source_solar": "Entiteit voor Zon / PV"
   },
   "screen": {
     "soc": "Accu",

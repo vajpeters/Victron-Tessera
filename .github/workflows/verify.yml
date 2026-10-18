@@ -6,7 +6,7 @@ on:
 permissions:
   contents: read
 env:
-  TESSERA_COMMIT: c49854c8567fd079678445761a3a712736afc42b
+  TESSERA_COMMIT: ca3d6cd2c8eea6b55b8b0f552a44500726fd26bf
   PLUGINS_COMMIT: 69a0264063c9dc8fb105b833b19c26cb47a5a23e
 jobs:
   unit:
@@ -22,7 +22,7 @@ jobs:
         run: |
           git clone https://github.com/MaxGramser/tessera-plugins ../tessera-plugins
           git -C ../tessera-plugins checkout "$PLUGINS_COMMIT"
-          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git clone https://github.com/vajpeters/homeassistant_espscreen ../tessera-core
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
       - run: python -m unittest discover -s tests -v
       - name: Official Tessera plugin check
@@ -43,7 +43,7 @@ jobs:
         run: |
           git clone https://github.com/MaxGramser/tessera-plugins ../tessera-plugins
           git -C ../tessera-plugins checkout "$PLUGINS_COMMIT"
-          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git clone https://github.com/vajpeters/homeassistant_espscreen ../tessera-core
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
       - name: Install host build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev python3-venv

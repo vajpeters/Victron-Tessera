@@ -18,7 +18,7 @@ int main() {
   assert(m.get(SOC).valid && m.get(SOC).value == 0 && m.get(SOLAR).valid && m.get(GRID).valid);
   for (const char *bad : {"unknown","unavailable","false","True","","nan","inf","1.2 kW","1,2", "--"}) {
     m=normal(); m.set(BATTERY,bad,"W"); assert(!m.get(BATTERY).valid);
-    assert(m.health(now)==Health::PARTIAL);
+    assert(m.health(now)==Health::OK); // battery SOC is still a valid battery source
   }
   m=normal(); m.set(SOLAR,"12","kWh"); assert(!m.get(SOLAR).valid);
   m=normal(); m.set(LOAD,"1200","VA"); assert(!m.get(LOAD).valid);
@@ -32,6 +32,8 @@ int main() {
   m=normal(); m.set(SOLAR,"1.2","MW"); assert(m.get(SOLAR).value==1200000);
   // Critical loads are independently mapped and optional, never inferred from AC consumption.
   m=normal(); assert(!m.get(CRITICAL_LOAD).valid && m.health(now)==Health::OK);
+  m=normal(); m.samples[BATTERY] = {}; assert(m.get(SOC).valid && m.health(now)==Health::OK);
+  m=normal(); m.samples[SOC] = {}; assert(m.get(BATTERY).valid && m.health(now)==Health::OK);
   m.set(CRITICAL_LOAD,".65","kW");
   assert(m.get(CRITICAL_LOAD).valid && m.get(CRITICAL_LOAD).value==650);
   assert(m.get(LOAD).value==1800);
@@ -49,7 +51,8 @@ int main() {
   assert(!m.get(SOLAR).valid && m.health(now)==Health::PARTIAL);
   m=normal(); assert(m.get(BATTERY).valid);
   m.set(BATTERY,"unavailable","W");
-  assert(!m.get(BATTERY).valid && m.health(now)==Health::PARTIAL);
+  assert(!m.get(BATTERY).valid && m.health(now)==Health::OK);
+  m.samples[SOC] = {}; assert(m.health(now)==Health::PARTIAL);
   m=normal(); m.at=0; assert(m.health(now)==Health::UNKNOWN_TIME);
   assert(m.health(0)==Health::UNKNOWN_TIME);
   // Repeated identical states do not establish the age of an underlying measurement.

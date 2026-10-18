@@ -1,6 +1,6 @@
 id: victron_vrm
-version: 0.3.2
-api: '0.9'
+version: 0.4.0
+api: '0.15'
 icon: solar-power
 maintainer: vajpeters
 license: MIT
@@ -21,30 +21,32 @@ tiles:
     min: 1x1
     max: 5x5
   memory: 768
-  domains:
-  - sensor
-  has_attributes:
-  - battery_power
-  - solar_power
-  - load_power
-  - grid_power
-  attributes:
-  - unit_of_measurement
-  - battery_power
-  - battery_power_unit
-  - solar_power
-  - solar_power_unit
-  - load_power
-  - load_power_unit
-  - grid_power
-  - grid_power_unit
-  - battery_voltage
-  - battery_voltage_unit
-  - battery_current
-  - battery_current_unit
-  - critical_load_power
-  - critical_load_power_unit
-  - source_time
+  options:
+  - id: grid
+    kind: entity
+    label: source_grid
+    domains: [sensor]
+    attributes: [unit_of_measurement]
+  - id: ac_load
+    kind: entity
+    label: source_ac_load
+    domains: [sensor]
+    attributes: [unit_of_measurement]
+  - id: critical_load
+    kind: entity
+    label: source_critical_load
+    domains: [sensor]
+    attributes: [unit_of_measurement]
+  - id: battery
+    kind: entity
+    label: source_battery
+    domains: [sensor]
+    attributes: [unit_of_measurement]
+  - id: solar
+    kind: entity
+    label: source_solar
+    domains: [sensor]
+    attributes: [unit_of_measurement]
   example: tile_example
 cards:
 - id: dashboard

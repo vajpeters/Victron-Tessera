@@ -7,7 +7,12 @@
     "summary": "Your Victron sensors together on your Tessera screen.",
     "tile_name": "Victron dashboard",
     "card_name": "Victron details",
-    "tile_example": "Choose a Victron dashboard sensor"
+    "tile_example": "Choose the Grid, AC Loads, Critical Loads, Battery and Solar / PV entities",
+    "source_grid": "Grid entity",
+    "source_ac_load": "AC Loads entity",
+    "source_critical_load": "Critical Loads entity",
+    "source_battery": "Battery entity",
+    "source_solar": "Solar / PV entity"
   },
   "screen": {
     "soc": "Battery",

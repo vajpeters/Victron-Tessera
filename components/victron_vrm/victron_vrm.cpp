@@ -20,6 +20,29 @@ void set_attribute(Model &model, Metric metric, JsonObjectConst attributes, cons
   if (raw.is<float>() || raw.is<double>() || raw.is<int>() || raw.is<long>())
     model.set(metric, raw.as<double>(), unit);
 }
+
+void set_entity(Model &model, Metric metric, JsonObjectConst entities, const char *key, bool battery = false) {
+  const JsonObjectConst source = entities[key].as<JsonObjectConst>();
+  if (source.isNull()) return;
+  const JsonObjectConst attributes = source["attributes"].as<JsonObjectConst>();
+  const JsonVariantConst unit_value = attributes["unit_of_measurement"];
+  const char *unit = unit_value.is<const char *>() ? unit_value.as<const char *>() : nullptr;
+  const JsonVariantConst state = source["state"];
+  const Metric target = battery && unit && std::strcmp(unit, "%") ? BATTERY : metric;
+  if (state.is<const char *>()) model.set(target, state.as<const char *>(), unit);
+  else if (!state.isNull()) model.set(target, state.as<double>(), unit);
+  const JsonVariantConst updated = source["updated"];
+  uint32_t moment = 0;
+  if (updated.is<const char *>()) {
+    double parsed = 0;
+    if (numeric(updated.as<const char *>(), parsed) && parsed > 0 && parsed <= UINT32_MAX) moment = static_cast<uint32_t>(parsed);
+  } else if (!updated.isNull()) {
+    const double parsed = updated.as<double>();
+    if (std::isfinite(parsed) && parsed > 0 && parsed <= UINT32_MAX) moment = static_cast<uint32_t>(parsed);
+  }
+  if (moment && (!model.at || moment < model.at)) model.at = moment;
+  if (source["wait"].is<const char *>()) model.disconnected = true;
+}
 }  // namespace
 
 Model VictronVrm::model(JsonObjectConst data) const {
@@ -40,7 +63,15 @@ Model VictronVrm::model(JsonObjectConst data) const {
   const JsonVariantConst source_time = attributes["source_time"];
   if (source_time.is<const char *>()) m.set_time(source_time.as<const char *>());
   else if (!source_time.isNull()) m.set_time(source_time.as<double>());
-  m.disconnected = data["wait"].is<const char *>();
+  const JsonObjectConst entities = data["entities"].as<JsonObjectConst>();
+  if (!entities.isNull()) {
+    set_entity(m, GRID, entities, "grid");
+    set_entity(m, LOAD, entities, "ac_load");
+    set_entity(m, CRITICAL_LOAD, entities, "critical_load");
+    set_entity(m, SOC, entities, "battery", true);
+    set_entity(m, SOLAR, entities, "solar");
+  }
+  m.disconnected = m.disconnected || data["wait"].is<const char *>();
   return m;
 }
 // Every object belongs to the current tile/card. Updates only paint existing labels.

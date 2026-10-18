@@ -7,25 +7,31 @@ tiles:
   - 2x2
   - 2x1
   - 1x1
-  entity: sensor.victron_dashboard
+  options:
+    grid: sensor.victron_grid_power
+    ac_load: sensor.victron_ac_load
+    critical_load: sensor.victron_critical_load
+    battery: sensor.victron_battery_soc
+    solar: sensor.victron_solar_power
 states:
-  sensor.victron_dashboard:
+  sensor.victron_grid_power:
+    state: '150'
+    last_updated: '{epoch-60s}'
+    attributes: { unit_of_measurement: W, friendly_name: Grid }
+  sensor.victron_ac_load:
+    state: '1800'
+    last_updated: '{epoch-60s}'
+    attributes: { unit_of_measurement: W, friendly_name: AC Loads }
+  sensor.victron_critical_load:
+    state: '650'
+    last_updated: '{epoch-60s}'
+    attributes: { unit_of_measurement: W, friendly_name: Critical Loads }
+  sensor.victron_battery_soc:
     state: '78.5'
-    attributes:
-      unit_of_measurement: '%'
-      battery_power: '-0.45'
-      battery_power_unit: kW
-      solar_power: '1.2'
-      solar_power_unit: kW
-      load_power: '1800'
-      load_power_unit: W
-      grid_power: '150'
-      grid_power_unit: W
-      battery_voltage: '52.4'
-      battery_voltage_unit: V
-      battery_current: '-8.6'
-      battery_current_unit: A
-      critical_load_power: '650'
-      critical_load_power_unit: W
-      source_time: '{epoch-60s}'
+    last_updated: '{epoch-60s}'
+    attributes: { unit_of_measurement: '%', friendly_name: Battery }
+  sensor.victron_solar_power:
+    state: '1.2'
+    last_updated: '{epoch-60s}'
+    attributes: { unit_of_measurement: kW, friendly_name: Solar / PV }
 time_zone: Europe/Amsterdam

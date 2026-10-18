@@ -15,9 +15,11 @@ class Contract(unittest.TestCase):
         self.assertNotIn('fetch',self.manifest)
         self.assertNotIn('permissions',self.manifest)
         tile=self.manifest['tiles'][0]
-        self.assertEqual(['sensor'],tile['domains'])
-        self.assertEqual(['battery_power','solar_power','load_power','grid_power'],tile['has_attributes'])
-        self.assertEqual(16,len(tile['attributes']))
+        self.assertNotIn('domains',tile)
+        options=tile['options']
+        self.assertEqual(['grid','ac_load','critical_load','battery','solar'],[o['id'] for o in options])
+        self.assertTrue(all(o['kind']=='entity' and o['domains']==['sensor'] for o in options))
+        self.assertTrue(all(o['attributes']==['unit_of_measurement'] for o in options))
         self.assertNotIn('text_sensor',self.package)
         self.assertNotIn('defaults',self.package)
     def test_5x5_page_grid_range_is_supported(self):
@@ -40,14 +42,12 @@ class Contract(unittest.TestCase):
         preview=yaml.safe_load((ROOT/'preview.yaml').read_text())
         self.assertNotIn('answers',preview)
         tile=preview['tiles'][0]
-        self.assertIn(tile['entity'],preview['states'])
-        attrs=preview['states'][tile['entity']]['attributes']
-        self.assertEqual('{epoch-60s}',attrs['source_time'])
-        self.assertTrue(set(self.manifest['tiles'][0]['has_attributes']).issubset(attrs))
+        self.assertEqual(set(tile['options'].values()),set(preview['states']))
+        self.assertEqual('78.5',preview['states'][tile['options']['battery']]['state'])
     def test_plugin_does_not_take_over_network_or_core(self):
         for forbidden in ('api','wifi','ota','esphome','mqtt','http_request','packages','external_components'):
             self.assertNotIn(forbidden,self.package)
-        self.assertEqual('0.9',self.manifest['api'])
+        self.assertEqual('0.15',self.manifest['api'])
         self.assertEqual('vajpeters',self.manifest['maintainer'])
 
 if __name__=='__main__': unittest.main()

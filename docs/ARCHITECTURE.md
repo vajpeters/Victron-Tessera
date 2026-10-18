@@ -13,7 +13,7 @@ references or cross-tile global cache are retained.
 Sign switches and the age limit are ordinary ESPHome config entities. There are no actions on Victron equipment.
 The dashboard never draws a balanced energy-flow claim from independently mapped sensors.
 
-References inspected: Tessera core c49854c8567fd079678445761a3a712736afc42b (0.4.89, plugin API 0.14),
+References inspected: Tessera core ca3d6cd2c8eea6b55b8b0f552a44500726fd26bf (dev, plugin API 0.15),
 tessera-plugins 69a0264063c9dc8fb105b833b19c26cb47a5a23e, official plugin manifest and firmware API.
 Only API 0.9 features are required by this plugin. Upstream dependencies used for verification are pinned in CI.
 
