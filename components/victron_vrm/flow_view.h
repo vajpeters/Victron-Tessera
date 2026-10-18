@@ -33,7 +33,7 @@ class FlowView {
   void create(lv_obj_t *parent, int width, int height, const tessera::Plugin *plugin) {
     plugin_ = plugin; width_ = width;
     const int gap = ui::px(20), body = ui::line_height(Font::BODY);
-    const int icon = ui::line_height(Font::ICON_SMALL), header = std::max(ui::line_height(Font::TITLE), icon);
+    const int icon = ui::line_height(Font::ICON_SMALL), header = std::max(ui::line_height(Font::HEADLINE), icon);
     const int room = height - body - gap;
     const int gutter = std::max(gap, width / 28);
     const int cw = (width - gutter * 2) / 3, ch = room * 34 / 100;
@@ -61,7 +61,7 @@ class FlowView {
       c.value_height = ch - body * 2 - gap * 3 - header;
       c.icon = label(c.surface, tx, ty, icon, Font::ICON_SMALL, accents[i]);
       ui::set_text(c.icon, ui::icon(glyphs[i]));
-      c.title = label(c.surface, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::TITLE, theme::INK);
+      c.title = label(c.surface, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::HEADLINE, theme::INK);
       c.value_width = c.width - icon - gap / 2;
       c.value_x = tx + icon + gap / 2; c.value_y = ty + header + gap / 2;
       c.value = label(c.surface, tx, c.value_y, c.width, Font::TITLE, theme::INK);
@@ -123,7 +123,10 @@ class FlowView {
     const Metric metrics[5] = {GRID, LOAD, CRITICAL_LOAD, SOC, SOLAR};
     const char *keys[5] = {"grid", "load", "critical_load", "soc", "solar"};
     for (int i = 0; i < 5; ++i) {
-      auto &c = cards_[i]; ui::set_text(c.title, plugin_->text(keys[i]));
+      auto &c = cards_[i];
+      const std::string title = plugin_->text(keys[i]);
+      ui::set_font(c.title, ui::text_width(title, Font::HEADLINE) <= c.value_width ? Font::HEADLINE : Font::TITLE);
+      ui::set_text(c.title, title);
       std::string text = value(m.get(metrics[i]), i == 3 ? "%" : "W", i == 3 ? 1 : 0, i == 0);
       const auto split = text.find_last_of(' ');
       const std::string number = split == std::string::npos ? text : text.substr(0, split);
@@ -133,7 +136,7 @@ class FlowView {
       const int spacing = unit.empty() ? 0 : ui::px(6);
       for (Font f : {Font::DIGITS, Font::VALUE, Font::HEADLINE, Font::TITLE, Font::BODY}) {
         if (!ui::covers(number, f) || ui::line_height(f) > c.value_height) continue;
-        for (Font u : {Font::TITLE, Font::BODY}) {
+        for (Font u : {Font::VALUE, Font::HEADLINE, Font::TITLE, Font::BODY}) {
           if ((!unit.empty() && ui::line_height(u) > c.value_height) ||
               ui::text_width(number, f) + spacing + ui::text_width(unit, u) > c.value_width) continue;
           face = f; unit_face = u; fits = true; break;
