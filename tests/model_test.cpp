@@ -63,8 +63,8 @@ int main() {
   m=normal(); m.disconnected=true; assert(m.health(now)==Health::OLD);
   m=normal(); m.set(GRID,"unavailable","W"); assert(m.health(now)==Health::OK); // off-grid is optional
   m=normal(); m.set(VOLTAGE,"unavailable","V"); assert(m.health(now)==Health::OK);
-  m=normal(); assert(m.health(now+900)==Health::OK);
-  assert(m.health(now+901)==Health::OLD);
+  m=normal(); assert(m.health(m.at+Model::MAX_AGE)==Health::OK);
+  assert(m.health(m.at+Model::MAX_AGE+1)==Health::OLD);
   m=normal(); m.at=0; m.set_time("1792303200000"); assert(m.at==0);
   m.set_time("2026-10-18T12:00:00Z"); assert(m.at==0);
   m.set_time("nan"); assert(m.at==0);
