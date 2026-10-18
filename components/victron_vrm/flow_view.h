@@ -39,6 +39,7 @@ class FlowView {
       c.extra = label(parent, tx, ys[i] + ch - body - gap / 2, c.width, Font::BODY, theme::MUTED);
     }
     inverter_ = box(parent, center - iw / 2, mid - ih / 2, iw, ih, theme::ACCENT, ui::px(6));
+    inverter_band_ = box(parent, center - iw / 2, mid, iw, ui::px(3), theme::MARK_AMBER, 0);
     inverter_icon_ = label(parent, center - iw / 2, mid - ih / 2 + ui::px(4), iw,
                            Font::ICON, theme::ON_ACCENT);
     lv_obj_set_style_text_align(inverter_icon_, LV_TEXT_ALIGN_CENTER, 0);
@@ -73,6 +74,7 @@ class FlowView {
     for (int i = 0; i < 5; ++i) ui::set_color(cards_[i].icon, accents[i]);
     for (int i = 0; i < line_count_; ++i) ui::set_fill(lines_[i], tessera::Tone::NORMAL, theme::LINE);
     ui::set_fill(inverter_, tessera::Tone::NORMAL, theme::ACCENT);
+    ui::set_fill(inverter_band_, tessera::Tone::NORMAL, theme::MARK_AMBER);
     ui::set_color(inverter_icon_, theme::ON_ACCENT); ui::set_color(inverter_text_, theme::ON_ACCENT);
     for (auto *arrow : arrows_) ui::set_color(arrow, theme::ACCENT);
     ui::set_color(footer_, theme::MUTED);
@@ -93,9 +95,9 @@ class FlowView {
       ui::set_text(c.note, ""); ui::set_text(c.extra, "");
     }
     ui::set_text(cards_[0].note, plugin_->text(!grid.valid ? "not_mapped" : grid.value > 0 ? "import" : grid.value < 0 ? "export" : "idle"));
-    ui::set_text(cards_[2].note, plugin_->text(m.get(CRITICAL_LOAD).valid ? "critical_load" : "not_mapped"));
+    ui::set_text(cards_[2].note, m.get(CRITICAL_LOAD).valid ? "" : plugin_->text("not_mapped"));
     const char *state = !battery.valid ? "battery_power" : battery.value > 30 ? "charging" : battery.value < -30 ? "discharging" : "idle";
-    ui::set_text(cards_[3].note, plugin_->text(state) + "  " + value(battery, "W", 0, true));
+    ui::set_text(cards_[3].note, std::string(plugin_->text(state)) + "  " + value(battery, "W", 0, true));
     ui::set_text(cards_[3].extra, value(m.get(VOLTAGE), "V", 1) + "   " + value(m.get(CURRENT), "A", 1));
     const Health health = m.health(now);
     const bool fresh = health == Health::OK;
@@ -120,7 +122,7 @@ class FlowView {
   const tessera::Plugin *plugin_{};
   int width_{}, line_count_{};
   bool arrow_fits_[5]{};
-  lv_obj_t *lines_[7]{}, *arrows_[5]{}, *inverter_{}, *inverter_icon_{}, *inverter_text_{}, *footer_{};
+  lv_obj_t *lines_[7]{}, *arrows_[5]{}, *inverter_{}, *inverter_icon_{}, *inverter_band_{}, *inverter_text_{}, *footer_{};
   static lv_obj_t *box(lv_obj_t *parent, int x, int y, int w, int h, theme::Role color, int radius) {
     auto *obj = ui::block(parent, color); lv_obj_set_pos(obj, x, y); lv_obj_set_size(obj, w, h);
     lv_obj_set_style_radius(obj, radius, 0); return obj;
