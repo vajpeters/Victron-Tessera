@@ -87,3 +87,5 @@ responsible for any VRM connection and its credentials. Sensor IDs are included 
 ## License
 
 MIT. Based on the Tessera plugin scaffold, copyright 2026 Max Gramser. The Tessera firmware has its own AGPL license.
+
+See [validation results for 0.2.0](docs/VALIDATION.md) for the exact tested code, screen sizes and hardware limits.
