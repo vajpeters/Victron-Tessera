@@ -1,0 +1,34 @@
+name: Reference 10.1-inch firmware
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  firmware:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TESSERA_COMMIT: c49854c8567fd079678445761a3a712736afc42b
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Get pinned Tessera firmware
+        run: |
+          git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
+          git -C ../tessera-core checkout "$TESSERA_COMMIT"
+      - run: pip install esphome==2026.9.0
+      - name: Generate compile-only Guition 10.1-inch profile
+        run: python tools/firmware_config.py --core ../tessera-core
+      - name: Compile real ESP32-P4 firmware, never upload
+        run: |
+          set -o pipefail
+          esphome compile .build/jc8012p4a1.yaml 2>&1 | tee .build/firmware.log
+      - name: Keep compile log, no deployable firmware
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-firmware-log
+          include-hidden-files: true
+          path: .build/firmware.log
