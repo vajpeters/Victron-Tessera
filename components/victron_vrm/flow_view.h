@@ -1,4 +1,32 @@
 #pragma once
+#include "victron_vrm.h"
+#include <algorithm>
+#include <cstdio>
+#include <string>
+
+namespace esphome::victron_vrm {
+using tessera::Font;
+namespace ui = tessera::ui;
+
+inline std::string value(Sample sample, const char *unit, unsigned precision = 0, bool absolute = false) {
+  if (!sample.valid) return "--";
+  char text[48]; const double v = absolute ? std::fabs(sample.value) : sample.value;
+  if (!strcmp(unit, "W") && std::fabs(v) >= 1000)
+    snprintf(text, sizeof(text), std::fabs(v) >= 100000 ? "%.0f kW" : "%.1f kW", v / 1000);
+  else snprintf(text, sizeof(text), "%.*f %s", static_cast<int>(precision), v, unit);
+  return text;
+}
+inline const char *health_key(Health h) {
+  switch (h) {
+    case Health::OLD: return "old";
+    case Health::PARTIAL: return "partial";
+    case Health::UNKNOWN_TIME: return "unknown_time";
+    case Health::CLOCK: return "clock";
+    case Health::OK: return "measured";
+    default: return "empty";
+  }
+}
+
 // A Victron-style arrangement using only mapped measurements and native theme colours.
 class FlowView {
  public:
@@ -61,6 +89,9 @@ class FlowView {
       arrows_[i] = label(parent, centers[i] - icon / 2, (start + end - icon) / 2,
                          icon, Font::ICON_SMALL, theme::ACCENT);
     }
+    // PV feeds the lower horizontal branch; its direction mark follows that branch.
+    lv_obj_set_pos(arrows_[4], (center + right - icon) / 2, bottom - gap - icon / 2);
+    arrow_fits_[4] = right - center >= icon + gap && gap >= (icon + 1) / 2;
     footer_ = label(parent, 0, height - body, width, Font::BODY, theme::MUTED);
     theme();
   }
@@ -126,7 +157,7 @@ class FlowView {
     for (int i = 0; i < 5; ++i) {
       const bool active = arrow_fits_[i] && fresh && flows[i].valid && std::fabs(flows[i].value) > 1;
       const bool down = i == 0 ? grid.value > 0 : i == 3 ? battery.value > 0 : false;
-      ui::set_text(arrows_[i], active ? ui::icon(down ? 0xF0045 : 0xF005D) : "");
+      ui::set_text(arrows_[i], active ? ui::icon(i == 4 ? 0xF004D : down ? 0xF0045 : 0xF005D) : "");
     }
     std::string footer = plugin_->text(health_key(health));
     if (m.at && now && m.at <= now && now - m.at < 86400u) {
@@ -157,3 +188,5 @@ class FlowView {
                                std::max(ui::px(2), std::abs(y2 - y1)), theme::LINE, 0);
   }
 };
+
+}  // namespace esphome::victron_vrm

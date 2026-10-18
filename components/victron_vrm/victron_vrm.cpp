@@ -1,12 +1,11 @@
 #include "victron_vrm.h"
+#include "flow_view.h"
 #include "esphome/components/api/api_server.h"
 #include <algorithm>
 #include <cstdio>
 #include <string>
 
 namespace esphome::victron_vrm {
-using tessera::Font;
-namespace ui = tessera::ui;
 
 Model VictronVrm::snapshot() const {
   Model m;
@@ -22,27 +21,6 @@ Model VictronVrm::snapshot() const {
   m.disconnected = !api::global_api_server || !api::global_api_server->is_connected();
   return m;
 }
-static std::string value(Sample sample, const char *unit, unsigned precision = 0, bool absolute = false) {
-  if (!sample.valid) return "--";
-  char text[48]; const double v = absolute ? std::fabs(sample.value) : sample.value;
-  if (!strcmp(unit, "W") && std::fabs(v) >= 1000)
-    snprintf(text, sizeof(text), std::fabs(v) >= 100000 ? "%.0f kW" : "%.1f kW", v / 1000);
-  else snprintf(text, sizeof(text), "%.*f %s", static_cast<int>(precision), v, unit);
-  return text;
-}
-static const char *health_key(Health h) {
-  switch (h) {
-    case Health::OLD: return "old";
-    case Health::PARTIAL: return "partial";
-    case Health::UNKNOWN_TIME: return "unknown_time";
-    case Health::CLOCK: return "clock";
-    case Health::OK: return "measured";
-    default: return "empty";
-  }
-}
-
-#include "flow_view.h"
-
 // Every object belongs to the current tile/card. Updates only paint existing labels.
 class DashboardView {
  public:
