@@ -62,6 +62,18 @@ jobs:
         env:
           TESSERA_TREE: ${{ github.workspace }}/../tessera-core
         run: python ../tessera-plugins/tools/preview.py --setup
+      - name: Render primary 10.1-inch screen first
+        env:
+          TESSERA_TREE: ${{ github.workspace }}/../tessera-core
+          TESSERA_MANIFEST: ${{ github.workspace }}/../tessera-core/screen_manager/app/plugin_manifest.py
+          TESSERA_BOARDS: ${{ github.workspace }}/../tessera-core/screen_manager/app/boards.json
+        run: python ../tessera-plugins/tools/preview.py . --board jc8012p4a1 --out .preview/primary --strict
+      - name: Publish primary preview for early visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: primary-10inch-preview
+          include-hidden-files: true
+          path: .preview/primary/
       - name: Compile and audit real firmware previews
         env:
           TESSERA_TREE: ${{ github.workspace }}/../tessera-core

@@ -32,10 +32,11 @@ class FlowView {
  public:
   void create(lv_obj_t *parent, int width, int height, const tessera::Plugin *plugin) {
     plugin_ = plugin; width_ = width;
-    const int gap = ui::px(12), body = ui::line_height(Font::BODY);
+    const int gap = ui::px(20), body = ui::line_height(Font::BODY);
     const int icon = ui::line_height(Font::ICON_SMALL), header = std::max(ui::line_height(Font::TITLE), icon);
     const int room = height - body - gap;
-    const int cw = (width - gap * 2) / 3, ch = room * 34 / 100;
+    const int gutter = std::max(gap, width / 28);
+    const int cw = (width - gutter * 2) / 3, ch = room * 34 / 100;
     const int bottom = room - ch, mid = (ch + bottom) / 2;
     const int center = width / 2, left = cw / 2, right = width - cw / 2;
     const int iw = std::min(cw / 2, room / 5), ih = std::min(room / 5, bottom - ch - gap * 2);
@@ -47,7 +48,7 @@ class FlowView {
     line(parent, center, mid + ih / 2, center, bottom);
     line(parent, center, bottom - gap, right, bottom - gap);
     line(parent, right, bottom - gap, right, bottom);
-    const int xs[5] = {0, cw + gap, 2 * (cw + gap), cw + gap, 2 * (cw + gap)};
+    const int xs[5] = {0, cw + gutter, 2 * (cw + gutter), cw + gutter, 2 * (cw + gutter)};
     const int ys[5] = {0, 0, 0, bottom, bottom};
     const uint32_t glyphs[5] = {0xF0D3E, 0xF06A5, 0xF002A, 0xF0079, 0xF0A72};
     const theme::Role accents[5] = {theme::INK, theme::MARK_GREEN, theme::MARK_AMBER,
@@ -61,7 +62,8 @@ class FlowView {
       c.icon = label(parent, tx, ty, icon, Font::ICON_SMALL, accents[i]);
       ui::set_text(c.icon, ui::icon(glyphs[i]));
       c.title = label(parent, tx + icon + gap / 2, ty, c.width - icon - gap / 2, Font::TITLE, theme::INK);
-      c.value_x = tx; c.value_y = ty + header + gap / 2;
+      c.value_width = c.width - icon - gap / 2;
+      c.value_x = tx + icon + gap / 2; c.value_y = ty + header + gap / 2;
       c.value = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
       c.unit = label(parent, tx, c.value_y, c.width, Font::TITLE, theme::INK);
       c.rule = box(parent, xs[i] + 1, ys[i] + ch - body * 2 - gap, cw - 2, 1, theme::LINE, 0);
@@ -129,13 +131,13 @@ class FlowView {
         if (!ui::covers(number, f) || ui::line_height(f) > c.value_height) continue;
         for (Font u : {Font::TITLE, Font::BODY}) {
           if ((!unit.empty() && ui::line_height(u) > c.value_height) ||
-              ui::text_width(number, f) + spacing + ui::text_width(unit, u) > c.width) continue;
+              ui::text_width(number, f) + spacing + ui::text_width(unit, u) > c.value_width) continue;
           face = f; unit_face = u; fits = true; break;
         }
         if (fits) break;
       }
-      const int number_width = std::min(c.width, ui::text_width(number, face));
-      const int unit_width = unit.empty() ? 0 : std::max(0, c.width - number_width - spacing);
+      const int number_width = std::min(c.value_width, ui::text_width(number, face));
+      const int unit_width = unit.empty() ? 0 : std::max(0, c.value_width - number_width - spacing);
       const int row_height = std::max(ui::line_height(face), unit.empty() ? 0 : ui::line_height(unit_face));
       ui::set_font(c.value, face); ui::set_text(c.value, number);
       lv_obj_set_width(c.value, number_width);
@@ -169,7 +171,7 @@ class FlowView {
  private:
   struct CardParts {
     lv_obj_t *frame{}, *surface{}, *icon{}, *title{}, *value{}, *unit{}, *rule{}, *note{}, *extra{};
-    int width{}, height{}, value_height{}, value_x{}, value_y{};
+    int width{}, height{}, value_height{}, value_width{}, value_x{}, value_y{};
   } cards_[5];
   const tessera::Plugin *plugin_{};
   int width_{}, line_count_{};
