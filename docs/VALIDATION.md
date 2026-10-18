@@ -1,12 +1,12 @@
 # Development validation for 0.3.0
 
-Verified runtime commit: `e3a2d9465bc7e41bdaa5b6804251c98c8dda9564`.
+Verified runtime commit: `7f5a7bf5fc04e26a7dfabf3f70d2cae4ce24dd14`.
 Later documentation and image commits do not change the runtime.
 
 - Eight Python contract/tooling tests passed; the native C++ model tests passed with warnings treated as errors.
 - The official Tessera manifest/package check passed.
-- [Full firmware preview verification](https://github.com/vajpeters/Victron-Tessera/actions/runs/39138721914) passed, with zero visual warnings and no missing Home Assistant fixture subscriptions.
-- [Real ESP32-P4 reference firmware build](https://github.com/vajpeters/Victron-Tessera/actions/runs/39138721634) passed for Guition JC8012P4A1. This is a compile check, not identification or testing of the owner's panel.
+- [Full firmware preview verification](https://github.com/vajpeters/Victron-Tessera/actions/runs/39140505301) passed, with zero visual warnings and no missing Home Assistant fixture data.
+- [Real ESP32-P4 reference firmware build](https://github.com/vajpeters/Victron-Tessera/actions/runs/39141261003) passed for Guition JC8012P4A1. This is a compile check, not identification or testing of the owner's panel.
 
 | Preview target | Pixels | Layout |
 |---|---|---|
