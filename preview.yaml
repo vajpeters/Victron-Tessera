@@ -2,43 +2,31 @@ tiles:
 - tile: overview
   name: Victron VRM
   sizes:
+  - 5x5
   - 5x4
   - 3x2
   - 2x2
   - 2x1
   - 1x1
+  entity: sensor.victron_dashboard
 states:
-  sensor.victron_vrm_unassigned_critical_load:
-    state: '650'
-    attributes:
-      unit_of_measurement: W
-  sensor.victron_vrm_unassigned_soc:
+  sensor.victron_dashboard:
     state: '78.5'
     attributes:
       unit_of_measurement: '%'
-      victron_timestamp: '{epoch-60s}'
-  sensor.victron_vrm_unassigned_battery:
-    state: '-0.45'
-    attributes:
-      unit_of_measurement: kW
-  sensor.victron_vrm_unassigned_solar:
-    state: '1.2'
-    attributes:
-      unit_of_measurement: kW
-  sensor.victron_vrm_unassigned_load:
-    state: '1800'
-    attributes:
-      unit_of_measurement: W
-  sensor.victron_vrm_unassigned_grid:
-    state: '150'
-    attributes:
-      unit_of_measurement: W
-  sensor.victron_vrm_unassigned_voltage:
-    state: '52.4'
-    attributes:
-      unit_of_measurement: V
-  sensor.victron_vrm_unassigned_current:
-    state: '-8.6'
-    attributes:
-      unit_of_measurement: A
+      battery_power: '-0.45'
+      battery_power_unit: kW
+      solar_power: '1.2'
+      solar_power_unit: kW
+      load_power: '1800'
+      load_power_unit: W
+      grid_power: '150'
+      grid_power_unit: W
+      battery_voltage: '52.4'
+      battery_voltage_unit: V
+      battery_current: '-8.6'
+      battery_current_unit: A
+      critical_load_power: '650'
+      critical_load_power_unit: W
+      source_time: '{epoch-60s}'
 time_zone: Europe/Amsterdam

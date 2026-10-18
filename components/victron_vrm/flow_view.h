@@ -57,6 +57,8 @@ class FlowView {
       auto &c = cards_[i]; c.width = cw - gap * 2; c.height = ch;
       c.frame = box(parent, xs[i], ys[i], cw, ch, theme::LINE, ui::px(6));
       c.surface = box(c.frame, 1, 1, cw - 2, ch - 2, theme::CARD, ui::px(6));
+      // Let Tessera's per-tile background colour softly tint the Victron panels.
+      lv_obj_set_style_bg_opa(c.surface, LV_OPA_80, 0);
       const int tx = gap - 1, ty = gap - 1;
       c.value_height = ch - body * 2 - gap * 3 - header;
       c.icon = label(c.surface, tx, ty, icon, Font::ICON_SMALL, accents[i]);

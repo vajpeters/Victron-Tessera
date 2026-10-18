@@ -1,12 +1,11 @@
 # Victron Tessera
 
 A native monitoring dashboard for [Tessera](https://github.com/MaxGramser/homeassistant_espscreen).
-Choose your own Home Assistant sensors in the plugin's setup screen. No VRM access token is needed by this plugin.
-Your existing Victron integration supplies the data. This is an independent community project, not an official Victron product.
+The Home Assistant source is selected when you add or edit the tile, so changing it does not rebuild the screen firmware.
+No VRM access token is needed by this plugin. This is an independent community project, not an official Victron product.
 
-The first target is a 10.1-inch display with a single-phase installation. Large tiles and detail cards use a Victron-style schematic: Grid, AC Loads and Critical Loads above a central inverter, with Battery and Solar below. Smaller tiles retain the compact readings layout.
-Three-phase calculation and per-phase views are reserved for a later version. You may map an existing, correct three-phase
-total sensor, but this version does not calculate that total itself.
+The first target is a 10.1-inch display with a single-phase installation. Large tiles and detail cards use a Victron-style schematic: Grid, AC Loads and Critical Loads above a central inverter, with Battery and Solar below. The tile supports every size from 1x1 through 5x5; smaller tiles use a compact readings layout.
+Three-phase calculation and per-phase views are reserved for a later version. You can supply an existing correct three-phase total, but the plugin does not calculate that total itself.
 
 ![10.1-inch firmware preview with synthetic measurements](docs/images/dashboard-light.png)
 
@@ -15,77 +14,82 @@ This is the actual compiled detail card with synthetic Home Assistant measuremen
 ## Set up
 
 1. Install a Victron integration in Home Assistant and check that its sensors work.
-2. In Tessera open **Plugins > Add with a link** and use `https://github.com/vajpeters/Victron-Tessera`.
-3. Choose your screen. Under its plugin setup choose the Home Assistant sensors for battery percentage, battery power,
-   total solar power, AC consumption and grid power. Grid power is optional on off-grid installations.
-4. Optionally choose battery voltage, battery current and critical loads. Leave unused fields unselected.
-5. Choose **Save and build**. Sensor mappings are ESPHome subscriptions, so changing a mapping rebuilds that screen.
-6. Add **Victron dashboard** to the layout. On a 10.1-inch screen start with a large tile (for example 5x4 where the grid allows it).
-7. Tap the tile for details. Small tiles show fewer readings; the detail card uses the available screen space.
-8. If needed, change **Battery discharge is positive** and **Grid export is positive** in the plugin's settings.
-   These switches take effect immediately and are also on the screen's plugin settings page.
+2. Create one Home Assistant template sensor that bundles the readings as described below.
+3. In Tessera open **Plugins > Add with a link** and use `https://github.com/vajpeters/Victron-Tessera`.
+4. Choose your screen and select **Save and build**. No sensor IDs are requested or compiled into the firmware.
+5. Add **Victron dashboard** to the layout. In the tile inspector select your dashboard sensor.
+6. Select any standard Tessera background colour in the same inspector. The colour fills the backdrop and softly tints the Victron panels.
+7. For the 10.1-inch screen, use 5x5 for the largest layout. Tap the tile for the full detail card.
+8. If needed, change **Battery discharge is positive** and **Grid export is positive** in the plugin settings.
 
-Inputs are configured per screen. Every tile of this plugin on that screen uses that screen's mapping.
-The default `sensor.victron_vrm_unassigned_*` names are deliberately unassigned placeholders, not automatically discovered sensors.
+Every tile can select a different dashboard sensor. Changing the selected entity or background colour is a layout change and does not require a firmware rebuild.
+
+## Home Assistant dashboard sensor
+
+Tessera currently supports one entity selector for a plugin tile. The selected sensor therefore carries battery percentage in its state and the other source sensors in attributes. Add this example to Home Assistant's `configuration.yaml`, replace the example entity IDs with yours, and reload template entities:
+
+```yaml
+template:
+  - sensor:
+      - name: Victron dashboard
+        unique_id: victron_tessera_dashboard
+        unit_of_measurement: "%"
+        state: "{{ states('sensor.victron_battery_soc') }}"
+        attributes:
+          battery_power: "{{ states('sensor.victron_battery_power') }}"
+          battery_power_unit: "{{ state_attr('sensor.victron_battery_power', 'unit_of_measurement') }}"
+          solar_power: "{{ states('sensor.victron_solar_power') }}"
+          solar_power_unit: "{{ state_attr('sensor.victron_solar_power', 'unit_of_measurement') }}"
+          load_power: "{{ states('sensor.victron_ac_load') }}"
+          load_power_unit: "{{ state_attr('sensor.victron_ac_load', 'unit_of_measurement') }}"
+          grid_power: "{{ states('sensor.victron_grid_power') }}"
+          grid_power_unit: "{{ state_attr('sensor.victron_grid_power', 'unit_of_measurement') }}"
+          battery_voltage: "{{ states('sensor.victron_battery_voltage') }}"
+          battery_voltage_unit: "{{ state_attr('sensor.victron_battery_voltage', 'unit_of_measurement') }}"
+          battery_current: "{{ states('sensor.victron_battery_current') }}"
+          battery_current_unit: "{{ state_attr('sensor.victron_battery_current', 'unit_of_measurement') }}"
+          critical_load_power: "{{ states('sensor.victron_critical_load') }}"
+          critical_load_power_unit: "{{ state_attr('sensor.victron_critical_load', 'unit_of_measurement') }}"
+          source_time: "{{ state_attr('sensor.victron_battery_soc', 'victron_timestamp') }}"
+```
+
+`battery_voltage`, `battery_current`, `critical_load_power` and their unit attributes are optional. `source_time` is optional too; omit it unless your source exposes the real measurement time as integer epoch seconds. The four power attributes in the example are required so Tessera can distinguish this aggregate sensor from ordinary sensors in the tile picker.
 
 ## Sensor contract
 
-| Reading | Accepted Home Assistant unit | Meaning |
-|---|---|---|
-| Battery percentage | `%` | A number from 0 to 100 |
-| Battery power | `W`, `kW`, `MW` | Positive charging, negative discharging by default |
-| Solar power | `W`, `kW`, `MW` | Nonnegative total of the solar sources you want to include |
-| AC consumption | `W`, `kW`, `MW` | Nonnegative AC load power, not cumulative energy |
-| Critical Loads | `W`, `kW`, `MW` | Optional, independently mapped protected-load power; never inferred or added to AC loads |
-| Grid power | `W`, `kW`, `MW` | Positive import, negative export by default |
-| Battery voltage | `V`, `mV` | Optional, nonnegative |
-| Battery current | `A`, `mA` | Optional, signed as provided by the selected sensor |
-| Source timestamp | `victron_timestamp` attribute on the selected battery percentage sensor, in integer epoch seconds | Optional, timestamps the measurement set |
+| Value | Place | Accepted unit | Meaning |
+|---|---|---|---|
+| Battery percentage | Sensor state | `%` | Number from 0 to 100 |
+| Battery power | `battery_power` | `W`, `kW`, `MW` | Positive charging, negative discharging by default |
+| Solar power | `solar_power` | `W`, `kW`, `MW` | Nonnegative total solar power |
+| AC consumption | `load_power` | `W`, `kW`, `MW` | Nonnegative AC load power, not cumulative energy |
+| Grid power | `grid_power` | `W`, `kW`, `MW` | Positive import, negative export by default |
+| Critical Loads | `critical_load_power` | `W`, `kW`, `MW` | Optional protected-load power; never inferred from AC Loads |
+| Battery voltage | `battery_voltage` | `V`, `mV` | Optional, nonnegative |
+| Battery current | `battery_current` | `A`, `mA` | Optional, signed as provided |
+| Source timestamp | `source_time` | epoch seconds | Optional time for the complete measurement set |
 
-The plugin reads `unit_of_measurement` and normalizes power to watts. `kWh`, `VA`, missing units, unknown,
-unavailable and nonnumeric values are not treated as watts or zero. A real zero is valid.
-Battery charge words use a 30 W dead band; this is a display classification, not the inverter's operating state.
-Reversing battery power does not reverse the separately mapped battery current sensor.
+Each reading's unit is supplied by its matching `*_unit` attribute. The plugin normalizes power to watts. `kWh`, `VA`, missing units, unknown, unavailable and nonnumeric values are not treated as watts or zero. A real zero is valid. Battery charge words use a 30 W dead band. Reversing battery power does not reverse battery current.
 
-Use an existing aggregate sensor, or create a Home Assistant helper/template if you want to add solar sources.
-Choose the correct totals yourself: the plugin never infers consumption from an energy balance and never adds phases.
-No inverter/ESS/relay/generator controls are exposed.
-
-The central inverter is a diagram symbol, not a measured operating state. Direction arrows appear only for valid, fresh measurements above 1 W. Without a source timestamp or with stale data, connections remain visible but direction arrows are hidden. No moving animation implies a live measurement. The view does not claim a physical wiring topology, calculate energy balance, or duplicate Critical Loads into AC Loads.
-
-The reference screenshot's history graphs, phase voltage/current rows, individual MPPT details, time-to-go and external-control status require additional data; this version does not fabricate them. The display uses Tessera's native fonts and colour roles, including its dark theme.
+The plugin never infers consumption from an energy balance, adds phases or controls Victron equipment. The central inverter is a diagram symbol, not a measured operating state. Direction arrows appear only for valid, fresh measurements above 1 W. The reference screenshot's history graphs, phase rows, individual MPPT details, time-to-go and external-control status require additional data and are not fabricated.
 
 ## Freshness
 
-Optionally supply the `victron_timestamp` attribute on your chosen battery percentage sensor (for example with a Home Assistant template sensor). It must hold the real source measurement time in integer epoch seconds for the entire measurement set. This uses an attribute because Tessera permits at most eight sensor selectors. No source timestamp is inferred.
-
-Without a source timestamp, **Age unknown** is intentional. A changed HA state or an active connection does not
-prove when the underlying Victron measurement was taken. Do not use a clock sensor as the source timestamp.
-The optional timestamp attribute must apply to the chosen measurement set. Source age is not validated separately per sensor.
-Timestamp input accepts epoch seconds only; ISO text and milliseconds are rejected.
-
-With a timestamp, values older than the configured age (15 minutes by default), or over five minutes in the future,
-show **Old data**. A missing screen clock is identified separately. With no native API clients connected the last
-known readings are also marked old. A connected API client is not necessarily Home Assistant, hence no freshness
-claim is based on that connection alone. Unavailable HA states clear the corresponding reading to `--`.
+`source_time` must be the real source measurement time for the complete set. Without it, **Age unknown** is intentional. Do not substitute the current clock time. Values older than the configured age (15 minutes by default), or over five minutes in the future, show **Old data**. ISO text and milliseconds are rejected.
 
 ## Compatibility and development
 
-The manifest requires plugin API 0.9 (the block tone helper), ESPHome 2026.6.2 or later, and a Tessera version that
-supports those. The verification target is Tessera 0.4.89 / ESPHome 2026.9.0. Supported boards are not hardware-certified
-until tested. The 12288-byte tile budget and 24 KB flash estimate are conservative reservations, not measured chip usage.
+The manifest requires plugin API 0.9, ESPHome 2026.6.2 or later, and a Tessera version that supports those. The verification target is Tessera 0.4.89 / ESPHome 2026.9.0. Supported boards are not hardware-certified until tested. The 12288-byte tile budget and 24 KB flash estimate are conservative reservations.
 
 See [Development](docs/DEVELOPMENT.md), [Hardware acceptance](docs/HARDWARE_ACCEPTANCE.md) and [Architecture](docs/ARCHITECTURE.md).
 Builds and previews run in GitHub Actions. A successful host preview is not a successful upload or physical touch test.
 
 ## Privacy
 
-This plugin reads only the Home Assistant entities you select, through the screen's existing native API connection.
-It opens no network service, calls no external API and stores no cloud credentials. Your Victron integration remains
-responsible for any VRM connection and its credentials. Sensor IDs are included in the selected screen's firmware.
+The plugin reads only the Home Assistant dashboard sensor selected on each tile through Tessera's existing connection. It opens no network service, calls no external API and stores no cloud credentials. Your Victron integration remains responsible for any VRM connection and credentials. Sensor IDs are stored in the Tessera layout rather than compiled into firmware.
 
 ## License
 
 MIT. Based on the Tessera plugin scaffold, copyright 2026 Max Gramser. The Tessera firmware has its own AGPL license.
 
-See [validation results for 0.2.0](docs/VALIDATION.md) for the exact tested code, screen sizes and hardware limits.
+See [validation results](docs/VALIDATION.md) for the exact tested code, screen sizes and hardware limits.

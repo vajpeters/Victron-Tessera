@@ -1,24 +1,49 @@
 #include "victron_vrm.h"
 #include "flow_view.h"
-#include "esphome/components/api/api_server.h"
 #include <algorithm>
 #include <cstdio>
 #include <string>
 
 namespace esphome::victron_vrm {
 
-Model VictronVrm::snapshot() const {
-  Model m;
-  for (unsigned i = 0; i < COUNT; ++i) {
-    if (readings_[i] && units_[i] && readings_[i]->has_state() && units_[i]->has_state())
-      m.set(static_cast<Metric>(i), readings_[i]->state.c_str(), units_[i]->state.c_str());
+namespace {
+void set_attribute(Model &model, Metric metric, JsonObjectConst attributes, const char *value_key,
+                   const char *unit_key, const char *fallback_unit) {
+  const JsonVariantConst raw = attributes[value_key];
+  if (raw.isNull()) return;
+  const JsonVariantConst configured_unit = attributes[unit_key];
+  const char *unit = configured_unit.is<const char *>() ? configured_unit.as<const char *>() : fallback_unit;
+  if (raw.is<const char *>()) {
+    model.set(metric, raw.as<const char *>(), unit);
+    return;
   }
-  if (source_time_ && source_time_->has_state()) m.set_time(source_time_->state.c_str());
+  if (raw.is<float>() || raw.is<double>() || raw.is<int>() || raw.is<long>())
+    model.set(metric, raw.as<double>(), unit);
+}
+}  // namespace
+
+Model VictronVrm::model(JsonObjectConst data) const {
+  Model m;
+  const JsonObjectConst attributes = data["attributes"].as<JsonObjectConst>();
+  const JsonVariantConst soc = data["state"];
+  const JsonVariantConst soc_unit = attributes["unit_of_measurement"];
+  const char *unit = soc_unit.is<const char *>() ? soc_unit.as<const char *>() : "%";
+  if (soc.is<const char *>()) m.set(SOC, soc.as<const char *>(), unit);
+  else if (!soc.isNull()) m.set(SOC, soc.as<double>(), unit);
+  set_attribute(m, BATTERY, attributes, "battery_power", "battery_power_unit", "W");
+  set_attribute(m, SOLAR, attributes, "solar_power", "solar_power_unit", "W");
+  set_attribute(m, LOAD, attributes, "load_power", "load_power_unit", "W");
+  set_attribute(m, GRID, attributes, "grid_power", "grid_power_unit", "W");
+  set_attribute(m, VOLTAGE, attributes, "battery_voltage", "battery_voltage_unit", "V");
+  set_attribute(m, CURRENT, attributes, "battery_current", "battery_current_unit", "A");
+  set_attribute(m, CRITICAL_LOAD, attributes, "critical_load_power", "critical_load_power_unit", "W");
+  const JsonVariantConst source_time = attributes["source_time"];
+  if (source_time.is<const char *>()) m.set_time(source_time.as<const char *>());
+  else if (!source_time.isNull()) m.set_time(source_time.as<double>());
   m.signs(battery_reverse_ && battery_reverse_->state, grid_reverse_ && grid_reverse_->state);
   if (max_age_ && max_age_->has_state() && std::isfinite(max_age_->state))
     m.max_age = static_cast<uint32_t>(max_age_->state);
-  // No clients is a definite loss of the HA feed. A connected client alone does not prove source freshness.
-  m.disconnected = !api::global_api_server || !api::global_api_server->is_connected();
+  m.disconnected = data["wait"].is<const char *>();
   return m;
 }
 // Every object belongs to the current tile/card. Updates only paint existing labels.
@@ -99,24 +124,29 @@ class OverviewTile : public tessera::Tile {
  public:
   explicit OverviewTile(VictronVrm *plugin) : plugin_(plugin) {}
   void create(const tessera::TileContext &c) override {
-    tile_ = c.tile; view_.create(c.parent, c.width, c.height, plugin_, false);
+    tile_ = c.tile; entity_ = c.entity; view_.create(c.parent, c.width, c.height, plugin_, false);
   }
-  void on_tick(uint32_t now) override { view_.paint(plugin_->snapshot(), now); }
+  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); on_tick(tessera::epoch()); }
+  void on_tick(uint32_t now) override { view_.paint(model_, now); }
   void on_theme() override { view_.theme(); on_tick(tessera::epoch()); }
-  void on_tap() override { tessera::open_card(plugin_->plugin_id(), "dashboard", "", tile_); }
+  void on_tap() override { tessera::open_card(plugin_->plugin_id(), "dashboard", entity_.c_str(), tile_); }
  private:
   VictronVrm *plugin_;
   int tile_ = -1;
+  tessera::Text entity_;
+  Model model_;
   DashboardView view_;
 };
 class DashboardCard : public tessera::Card {
  public:
   explicit DashboardCard(VictronVrm *plugin) : plugin_(plugin) {}
   void open(const tessera::CardContext &c) override { view_.create(c.parent, c.width, c.height, plugin_, true); }
-  void on_tick(uint32_t now) override { view_.paint(plugin_->snapshot(), now); }
+  void on_state(JsonObjectConst data) override { model_ = plugin_->model(data); on_tick(tessera::epoch()); }
+  void on_tick(uint32_t now) override { view_.paint(model_, now); }
   void on_theme() override { view_.theme(); on_tick(tessera::epoch()); }
  private:
   VictronVrm *plugin_;
+  Model model_;
   DashboardView view_;
 };
 void VictronVrm::setup() {

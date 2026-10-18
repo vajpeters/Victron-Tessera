@@ -1,4 +1,4 @@
-# Development validation for 0.2.0
+# Development validation for 0.3.0
 
 Verified runtime commit: `e3a2d9465bc7e41bdaa5b6804251c98c8dda9564`.
 Later documentation and image commits do not change the runtime.
@@ -19,4 +19,4 @@ The strict bench checks light/dark themes, tile sizes, taps, detail cards and se
 
 All previews use synthetic measurements. No live Home Assistant installation, physical display, touch controller or Victron equipment was exercised. No device was flashed, deployable firmware published or release created. The compile profile uses throwaway credentials and must never be installed. See [hardware acceptance](HARDWARE_ACCEPTANCE.md) for the remaining physical checks.
 
-Large-card direction arrows require valid, fresh measurements and a genuine `victron_timestamp` attribute on the selected SOC sensor. Without it, the view reports age unknown and retains static connection lines. History graphs, individual MPPT details and phase calculations are not implemented in 0.2.0.
+Large-card direction arrows require valid, fresh measurements and a genuine `source_time` attribute on the selected dashboard sensor. Without it, the view reports age unknown and retains static connection lines. History graphs, individual MPPT details and phase calculations are not implemented.

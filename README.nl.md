@@ -1,34 +1,33 @@
 # Victron Tessera
 
-Een native Tessera-dashboard voor je eigen Victron-sensoren in Home Assistant.
-De eerste versie richt zich op een 10,1-inchscherm en een eenfase-installatie.
+Een native Tessera-dashboard voor je eigen Victron-sensoren in Home Assistant. De eerste uitwerking richt zich op een 10,1-inchscherm en een eenfase-installatie.
 
 ![Firmwarepreview op 10,1 inch met testgegevens](docs/images/dashboard-light.png)
-
-Dit is de werkelijk gerenderde detailkaart met synthetische Home Assistant-metingen. [Nachtweergave](docs/images/dashboard-dark.png).
 
 ## Instellen
 
 1. Zorg dat je Victron-sensoren in Home Assistant de juiste waarden tonen.
-2. Voeg in Tessera de link `https://github.com/vajpeters/Victron-Tessera` toe bij Plugins.
-3. Kies je scherm en koppel zelf de sensoren voor accupercentage, accuvermogen, totale zonneproductie,
-   AC-verbruik en netvermogen. Spanning, stroom en kritieke verbruikers zijn optioneel; netvermogen ook zonder netaansluiting.
-4. Kies **Opslaan en bouwen**. Een andere sensorkoppeling vereist een nieuwe build.
-5. Plaats de dashboardtegel in je indeling, bij voorkeur groot op het 10,1-inchscherm. Tik erop voor details.
-6. Pas indien nodig de tekenrichting van accu- en netvermogen aan bij de plugininstellingen.
+2. Maak de Home Assistant-templatesensor uit het voorbeeld in de [Engelse README](README.md#home-assistant-dashboard-sensor) en vervang de voorbeeldnamen door je eigen sensor-ID's.
+3. Voeg in Tessera bij **Plugins > Toevoegen met een link** deze URL toe: `https://github.com/vajpeters/Victron-Tessera`.
+4. Kies je scherm en selecteer **Opslaan en bouwen**. Bij deze firmwarebouw hoef je geen sensoren te kiezen.
+5. Plaats **Victron-dashboard** in de indeling en kies de dashboardsensor in de instellingen van de tegel.
+6. Kies daar ook een van de gewone Tessera-achtergrondkleuren.
+7. Gebruik op het 10,1-inchscherm bij voorkeur 5x5. Kleinere formaten van 1x1 tot en met 5x5 blijven ondersteund.
 
-De plugin gebruikt de eenheden van de gekozen sensoren. Vermogen mag W, kW of MW zijn; kWh en VA worden niet als W gelezen.
-Zonder bron-tijdstempel staat er bewust dat de leeftijd onbekend is. De optionele tijdstempel moet epochseconden bevatten
-en de gekozen meetset dateren. Vul hier geen gewone kloksensor in.
+Je kunt de dashboardsensor en achtergrondkleur later wijzigen zonder de firmware opnieuw te bouwen. Iedere tegel kan een eigen dashboardsensor gebruiken.
 
-Je hebt in deze plugin geen VRM-token nodig. Die koppeling blijft bij je bestaande Home Assistant-integratie.
-Deze versie telt geen fasen of zonnebronnen op. Koppel daarvoor zelf een juiste totaalsensor.
-Zie de Engelse README voor de volledige eenheden, beperkingen en ontwikkelinstructies.
+## Waarom één dashboardsensor?
+
+Tessera biedt een plug-integel momenteel één keuzelijst voor een Home Assistant-entiteit. Daarom staat het accupercentage in de status van één templatesensor en staan accuvermogen, zonneproductie, AC-verbruik, netvermogen en de optionele waarden in attributen. Home Assistant blijft bepalen welke bestaande sensoren daarvoor worden gebruikt.
+
+De verplichte attributen zijn `battery_power`, `solar_power`, `load_power` en `grid_power`, elk met een bijbehorend `*_unit`-attribuut. `battery_voltage`, `battery_current`, `critical_load_power` en `source_time` zijn optioneel. Zie de Engelse README voor het volledige contract en een kopieerbaar YAML-voorbeeld.
+
+Vermogen mag W, kW of MW zijn; kWh en VA worden niet als W gelezen. De plug-in telt geen fasen of zonnebronnen op en verzint geen ontbrekende waarden. Voor een driefasesysteem geef je zelf correcte totaalsensoren door.
 
 ## Victron-indeling
 
-Versie 0.2.0 toont op ruime tegels en detailkaarten de Victron-indeling: Net, AC-verbruik en Kritieke verbruikers bovenaan, een omvormersymbool in het midden, accu en zon/PV onderaan. Kritieke verbruikers heeft een eigen optionele sensorkeuze; deze wordt niet opgeteld bij AC-verbruik. Kleine tegels behouden de compacte weergave.
+Ruime tegels en de detailkaart tonen Net, AC-verbruik en Kritieke verbruikers bovenaan, een omvormersymbool in het midden, en Accu en Zon/PV onderaan. Kleine tegels gebruiken de compacte weergave. De gekozen Tessera-kleur vult de achtergrond en kleurt de lichte panelen subtiel mee.
 
-Pijlen verschijnen alleen bij geldige, verse metingen boven 1 W. Het omvormersymbool meldt geen gemeten bedrijfsstatus. Historische grafieken, MPPT-details en overige gegevens uit het voorbeeld worden niet verzonnen. Sla op en bouw opnieuw om de extra sensorkeuze toe te voegen.
+Pijlen verschijnen alleen bij geldige, verse metingen boven 1 W. Het omvormersymbool meldt geen gemeten bedrijfsstatus. Historische grafieken, MPPT-details en andere ontbrekende gegevens uit het Victron-voorbeeld worden niet nagebootst.
 
-De optionele bron-tijdstempel komt uit het attribuut `victron_timestamp` van de gekozen accupercentagesensor (gehele epochseconden). Dit moet de echte meettijd van de volledige gegevensset zijn; zonder dit attribuut meldt het scherm **Leeftijd onbekend**. Zo blijven alle acht sensorkeuzes binnen de limiet van Tessera. Een Home Assistant-templatesensor kan dit attribuut doorgeven.
+Je hebt geen VRM-token nodig. De bestaande Home Assistant-integratie verzorgt de koppeling met Victron.

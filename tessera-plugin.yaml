@@ -1,5 +1,5 @@
 id: victron_vrm
-version: 0.2.0
+version: 0.3.0
 api: '0.9'
 icon: solar-power
 maintainer: vajpeters
@@ -11,83 +11,40 @@ requires:
   esphome: 2026.6.2
 boards: any
 flash_kb: 24
-permissions:
-  read_entities:
-  - '{soc}'
-  - '{battery}'
-  - '{solar}'
-  - '{load}'
-  - '{grid}'
-  - '{voltage}'
-  - '{current}'
-  - '{critical_load}'
 attributes:
 - ai-developed
-inputs:
-- id: soc
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_soc
-  hint: hint_soc
-- id: battery
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_battery
-  hint: hint_battery
-- id: solar
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_solar
-  hint: hint_solar
-- id: load
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_load
-  hint: hint_load
-- id: grid
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_grid
-  hint: hint_grid
-- id: voltage
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_voltage
-  hint: hint_voltage
-- id: current
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_current
-  hint: hint_current
-- id: critical_load
-  kind: entity
-  domains:
-  - sensor
-  scope: screen
-  label: input_critical_load
-  hint: hint_critical_load
 tiles:
 - id: overview
   name: tile_name
   icon: solar-power
   sizes:
     min: 1x1
-    max: 5x4
+    max: 5x5
   memory: 12288
+  domains:
+  - sensor
+  has_attributes:
+  - battery_power
+  - solar_power
+  - load_power
+  - grid_power
+  attributes:
+  - unit_of_measurement
+  - battery_power
+  - battery_power_unit
+  - solar_power
+  - solar_power_unit
+  - load_power
+  - load_power_unit
+  - grid_power
+  - grid_power_unit
+  - battery_voltage
+  - battery_voltage_unit
+  - battery_current
+  - battery_current_unit
+  - critical_load_power
+  - critical_load_power_unit
+  - source_time
   example: tile_example
 cards:
 - id: dashboard

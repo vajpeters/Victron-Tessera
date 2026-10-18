@@ -10,29 +10,20 @@ class Contract(unittest.TestCase):
     def setUp(self):
         self.manifest=yaml.safe_load((ROOT/'tessera-plugin.yaml').read_text())
         self.package=yaml.safe_load((ROOT/'plugin.yaml').read_text())
-    def test_mapping_is_user_owned_and_scoped(self):
-        inputs=self.manifest['inputs']
-        self.assertEqual(8,len(inputs))
-        self.assertTrue(all(i['kind']=='entity' and i['domains']==['sensor'] and i['scope']=='screen' for i in inputs))
+    def test_mapping_is_chosen_on_each_tile(self):
+        self.assertNotIn('inputs',self.manifest)
         self.assertNotIn('fetch',self.manifest)
-        self.assertNotIn('network',self.manifest['permissions'])
-        self.assertEqual({'{'+i['id']+'}' for i in inputs},set(self.manifest['permissions']['read_entities']))
-    def test_value_and_unit_subscribe_to_same_user_choice(self):
-        sensors={s['id']:s for s in self.package['text_sensor']}
-        self.assertEqual(17,len(sensors))
-        for metric in ('soc','battery','solar','load','grid','voltage','current','critical_load'):
-            value,unit=sensors['vrm_'+metric+'_value'],sensors['vrm_'+metric+'_unit']
-            self.assertEqual('${'+metric.upper()+'}',value['entity_id'])
-            self.assertEqual(value['entity_id'],unit['entity_id'])
-            self.assertEqual('unit_of_measurement',unit['attribute'])
-            self.assertTrue(value['internal'] and unit['internal'])
-            self.assertEqual(value['id'],self.package['victron_vrm'][metric])
-            self.assertEqual(unit['id'],self.package['victron_vrm'][metric+'_unit'])
-        timestamp=sensors['vrm_source_time']
-        self.assertEqual(sensors['vrm_soc_value']['entity_id'],timestamp['entity_id'])
-        self.assertEqual('victron_timestamp',timestamp['attribute'])
-        self.assertTrue(timestamp['internal'])
-        self.assertNotIn('SOURCE_TIME',self.package['defaults'])
+        self.assertNotIn('permissions',self.manifest)
+        tile=self.manifest['tiles'][0]
+        self.assertEqual(['sensor'],tile['domains'])
+        self.assertEqual(['battery_power','solar_power','load_power','grid_power'],tile['has_attributes'])
+        self.assertEqual(16,len(tile['attributes']))
+        self.assertNotIn('text_sensor',self.package)
+        self.assertNotIn('defaults',self.package)
+    def test_5x5_is_offered(self):
+        self.assertEqual('5x5',self.manifest['tiles'][0]['sizes']['max'])
+        preview=yaml.safe_load((ROOT/'preview.yaml').read_text())
+        self.assertIn('5x5',preview['tiles'][0]['sizes'])
     def test_sign_settings_are_persisted_and_exposed(self):
         self.assertEqual(2,len(self.package['switch']))
         for switch in self.package['switch']:
@@ -51,9 +42,11 @@ class Contract(unittest.TestCase):
     def test_preview_uses_synthetic_home_assistant_states(self):
         preview=yaml.safe_load((ROOT/'preview.yaml').read_text())
         self.assertNotIn('answers',preview)
-        self.assertEqual(8,len(preview['states']))
-        for key in self.package['defaults'].values(): self.assertIn(key,preview['states'])
-        self.assertEqual('{epoch-60s}',preview['states'][self.package['defaults']['SOC']]['attributes']['victron_timestamp'])
+        tile=preview['tiles'][0]
+        self.assertIn(tile['entity'],preview['states'])
+        attrs=preview['states'][tile['entity']]['attributes']
+        self.assertEqual('{epoch-60s}',attrs['source_time'])
+        self.assertTrue(set(self.manifest['tiles'][0]['has_attributes']).issubset(attrs))
     def test_plugin_does_not_take_over_network_or_core(self):
         for forbidden in ('api','wifi','ota','esphome','mqtt','http_request','packages','external_components'):
             self.assertNotIn(forbidden,self.package)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+- Choose the Home Assistant dashboard sensor while adding or editing each tile; changing it no longer rebuilds firmware.
+- Added 5x5 to the supported tile range and the official preview matrix.
+- The standard Tessera background-colour picker now colours the dashboard backdrop and softly tints its Victron panels.
+- Replaced the eight build-time sensor subscriptions with one runtime dashboard-sensor contract.
+
 ## 0.2.0
 - Victron-style cards and flow connections on large tiles and detail cards.
 - Optional, independently mapped Critical Loads sensor; existing AC load mapping is unchanged.

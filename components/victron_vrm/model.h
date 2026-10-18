@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
@@ -46,9 +47,19 @@ class Model {
     number *= scale;
     if (std::isfinite(number)) samples[metric] = {number, true};
   }
+  void set(Metric metric, double number, const char *unit) {
+    if (metric >= COUNT || !std::isfinite(number) || !unit) return;
+    char raw[32];
+    std::snprintf(raw, sizeof(raw), "%.12g", number);
+    set(metric, raw, unit);
+  }
   void set_time(const char *raw) {
     double epoch = 0;
     if (numeric(raw, epoch) && epoch > 0 && epoch <= UINT32_MAX && std::floor(epoch) == epoch)
+      at = static_cast<uint32_t>(epoch);
+  }
+  void set_time(double epoch) {
+    if (std::isfinite(epoch) && epoch > 0 && epoch <= UINT32_MAX && std::floor(epoch) == epoch)
       at = static_cast<uint32_t>(epoch);
   }
   Sample get(Metric metric) const { return samples[metric]; }
