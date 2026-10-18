@@ -19,17 +19,17 @@
     "input_soc": "Acculaadniveau",
     "hint_soc": "Kies een bestaande Home Assistant-sensor. Eenheid: %. Geen afleiding uit andere sensoren.",
     "input_battery": "Accuvermogen",
-    "hint_battery": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW or MW. Geen afleiding uit andere sensoren.",
+    "hint_battery": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren.",
     "input_solar": "Zonneproductie",
-    "hint_solar": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW or MW. Geen afleiding uit andere sensoren. Kies het totaal van alle zonnebronnen.",
+    "hint_solar": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren. Kies het totaal van alle zonnebronnen.",
     "input_load": "AC-verbruik",
-    "hint_load": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW or MW. Geen afleiding uit andere sensoren. Kies AC-verbruik in vermogen, geen energiemeter in kWh.",
+    "hint_load": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren. Kies AC-verbruik in vermogen, geen energiemeter in kWh.",
     "input_grid": "Netvermogen",
-    "hint_grid": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW or MW. Geen afleiding uit andere sensoren.Optioneel zonder net; positief betekent standaard afname.",
+    "hint_grid": "Kies een bestaande Home Assistant-sensor. Eenheid: W, kW of MW. Geen afleiding uit andere sensoren. Optioneel zonder net; positief betekent standaard afname.",
     "input_voltage": "Accuspanning (optioneel)",
-    "hint_voltage": "Kies een bestaande Home Assistant-sensor. Eenheid: V or mV. Geen afleiding uit andere sensoren.",
+    "hint_voltage": "Kies een bestaande Home Assistant-sensor. Eenheid: V of mV. Geen afleiding uit andere sensoren.",
     "input_current": "Accustroom (optioneel)",
-    "hint_current": "Kies een bestaande Home Assistant-sensor. Eenheid: A or mA. Geen afleiding uit andere sensoren."
+    "hint_current": "Kies een bestaande Home Assistant-sensor. Eenheid: A of mA. Geen afleiding uit andere sensoren."
   },
   "screen": {
     "soc": "Accu",

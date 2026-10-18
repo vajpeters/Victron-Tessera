@@ -25,7 +25,7 @@
     "input_load": "AC consumption",
     "hint_load": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors. Map AC consumption power, not an energy meter in kWh.",
     "input_grid": "Grid power",
-    "hint_grid": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors.Optional for off-grid systems; positive means import by default.",
+    "hint_grid": "Choose an existing Home Assistant sensor. Unit: W, kW or MW. Values are not inferred from other sensors. Optional for off-grid systems; positive means import by default.",
     "input_voltage": "Battery voltage (optional)",
     "hint_voltage": "Choose an existing Home Assistant sensor. Unit: V or mV. Values are not inferred from other sensors.",
     "input_current": "Battery current (optional)",

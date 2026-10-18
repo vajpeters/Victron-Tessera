@@ -17,7 +17,6 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install pyyaml
-      - run: python -m unittest discover -s tests -v
       - run: g++ -std=c++17 -Wall -Wextra -Werror -pedantic tests/model_test.cpp -o /tmp/model-test && /tmp/model-test
       - name: Get pinned upstream tools
         run: |
@@ -25,6 +24,7 @@ jobs:
           git -C ../tessera-plugins checkout "$PLUGINS_COMMIT"
           git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
+      - run: python -m unittest discover -s tests -v
       - name: Official Tessera plugin check
         run: |
           export TESSERA_MANIFEST="$GITHUB_WORKSPACE/../tessera-core/screen_manager/app/plugin_manifest.py"
@@ -47,6 +47,17 @@ jobs:
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
       - name: Install host build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libsdl2-dev python3-venv
+      - name: Cache preview build tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            ../tessera-plugins/tools/.cache
+            ~/.platformio
+          key: ${{ runner.os }}-preview-${{ env.TESSERA_COMMIT }}-${{ env.PLUGINS_COMMIT }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-preview-${{ env.TESSERA_COMMIT }}-${{ env.PLUGINS_COMMIT }}-
+      - name: Repair pinned preview state subscriptions
+        run: python tools/fix_preview_tools.py --plugins ../tessera-plugins
       - name: Prepare official preview bench
         env:
           TESSERA_TREE: ${{ github.workspace }}/../tessera-core
@@ -57,7 +68,11 @@ jobs:
           TESSERA_MANIFEST: ${{ github.workspace }}/../tessera-core/screen_manager/app/plugin_manifest.py
           TESSERA_BOARDS: ${{ github.workspace }}/../tessera-core/screen_manager/app/boards.json
         run: python ../tessera-plugins/tools/preview.py . --strict
+      - name: Require populated preview fixtures
+        run: python -c "import json; d=json.load(open('.preview/summary.json')); assert not any(x.get('where') == 'Home Assistant' for x in d.get('findings', [])), 'Preview sensor fixtures were not delivered'"
       - name: Generate store image from verified firmware
+        env:
+          TESSERA_TREE: ${{ github.workspace }}/../tessera-core
         run: python ../tessera-plugins/tools/store_image.py . --from .preview
       - name: Preserve previews and diagnostic logs
         if: always()

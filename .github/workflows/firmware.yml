@@ -19,6 +19,13 @@ jobs:
           git clone https://github.com/MaxGramser/homeassistant_espscreen ../tessera-core
           git -C ../tessera-core checkout "$TESSERA_COMMIT"
       - run: pip install esphome==2026.9.0
+      - name: Cache firmware build tools
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-firmware-${{ env.TESSERA_COMMIT }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-firmware-${{ env.TESSERA_COMMIT }}-
       - name: Generate compile-only Guition 10.1-inch profile
         run: python tools/firmware_config.py --core ../tessera-core
       - name: Compile real ESP32-P4 firmware, never upload

@@ -31,15 +31,27 @@ int main() {
   m=normal(); m.signs(true,true); assert(m.get(BATTERY).value==450 && m.get(GRID).value==-150);
   m=normal(); m.set(GRID,"-2.5","kW"); assert(m.get(GRID).value==-2500);
   m=normal(); m.set(SOLAR,"1.2","MW"); assert(m.get(SOLAR).value==1200000);
+  // A finite source value may overflow while converting to watts; clear the previous reading.
+  m=normal(); m.set(SOLAR,"1e308","MW");
+  assert(!m.get(SOLAR).valid && m.health(now)==Health::PARTIAL);
+  m=normal(); assert(m.get(BATTERY).valid);
+  m.set(BATTERY,"unavailable","W");
+  assert(!m.get(BATTERY).valid && m.health(now)==Health::PARTIAL);
   m=normal(); m.at=0; assert(m.health(now)==Health::UNKNOWN_TIME);
   assert(m.health(0)==Health::UNKNOWN_TIME);
+  // Repeated identical states do not establish the age of an underlying measurement.
+  m.set(SOLAR,"1.2","kW");
+  assert(m.get(SOLAR).valid && m.get(SOLAR).value==1200);
+  assert(m.health(now+86400)==Health::UNKNOWN_TIME);
   m=normal(); assert(m.health(0)==Health::CLOCK);
   m=normal(); assert(m.health(now+901)==Health::OLD);
-  m=normal(); m.at=now+301; assert(m.health(now)==Health::OLD);
+  m=normal(); m.at=now+300; assert(m.health(now)==Health::OK);
+  m.at=now+301; assert(m.health(now)==Health::OLD);
   m=normal(); m.disconnected=true; assert(m.health(now)==Health::OLD);
   m=normal(); m.set(GRID,"unavailable","W"); assert(m.health(now)==Health::OK); // off-grid is optional
   m=normal(); m.set(VOLTAGE,"unavailable","V"); assert(m.health(now)==Health::OK);
-  m=normal(); m.max_age=60; assert(m.health(now+1)==Health::OLD);
+  m=normal(); m.max_age=60; assert(m.health(now)==Health::OK);
+  assert(m.health(now+1)==Health::OLD);
   m=normal(); m.at=0; m.set_time("1792303200000"); assert(m.at==0);
   m.set_time("2026-10-18T12:00:00Z"); assert(m.at==0);
   m.set_time("nan"); assert(m.at==0);

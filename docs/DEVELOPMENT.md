@@ -1,8 +1,9 @@
 # Development
 
-Open the local checkout in SourceTree with **File > Open** (or **Add**), then select the repository folder.
+In SourceTree choose **New > Add Existing Local Repository** (or the **Add** tab), then select the repository folder.
 Review changes and use ordinary commits and pushes. No custom Git hooks, rebasing or forced pushes are needed.
 The plugin lives at the repository root so Tessera can install the plain GitHub URL.
+See [Atlassian's instructions](https://support.atlassian.com/sourcetree/kb/add-an-existing-repository-into-sourcetree/).
 
 ## Verification
 
@@ -28,3 +29,13 @@ Inspect `.preview/summary.json`, the actual tile and card PNGs and `store.png`. 
 For repeatable edge cases change the synthetic `states` in `preview.yaml`: solar 0; battery positive/negative; net
 positive/negative/0; state unavailable; missing unit; old/absent timestamp. Do not commit real entity IDs or captures.
 Generated previews, binaries, logs and build caches are ignored; only the reviewed store image is shipped.
+
+## Reference-board firmware build
+
+The separate **Reference 10.1-inch firmware** workflow is started manually in GitHub Actions. It compiles the plugin
+with the pinned Tessera checkout for a Guition JC8012P4A1, a 10.1-inch ESP32-P4 reference board. This does not identify
+the owner's exact panel model and does not flash any device. Its profile uses known throwaway credentials and must
+never be installed. Only its compiler log is uploaded, not a deployable firmware image.
+
+`python tools/firmware_config.py --core ../tessera-core` makes that ignored profile under `.build/`.
+Compile with `esphome compile .build/jc8012p4a1.yaml`. Do not use `esphome run` or an upload command on this profile.
